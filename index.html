@@ -13775,6 +13775,7 @@ function buildProfileSearchIndex() {
   }
 
   // Section headings
+  ['Issues', 'Manager & Reports', 'Leave', 'Time Off'].forEach(h => heading(h, 'overview', 'Overview'));
   ['Personal', 'Contact', 'Emergency Contact'].forEach(h => heading(h, 'profile', 'Profile'));
   ['Employment', 'Schedule', 'Workplaces'].forEach(h => heading(h, 'job', 'Job'));
   heading('Financial Information', 'pay', 'Pay', 'overview');
