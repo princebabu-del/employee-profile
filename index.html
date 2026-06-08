@@ -1327,6 +1327,16 @@ tbody td.col-check { padding-left: 16px; padding-right: 8px; }
 .drawer-nav-item.active svg { color: var(--900); }
 .drawer-nav-item-label { flex: 1; min-width: 0; }
 .drawer-nav-badge-wrap { flex-shrink: 0; margin-left: auto; }
+.drawer-nav-badge-wrap .tooltip {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+.drawer-nav-badge-wrap .tooltip::after {
+  left: auto;
+  right: 6px;
+  transform: none;
+}
 .drawer-nav-badge {
   flex-shrink: 0;
   display: inline-flex;
