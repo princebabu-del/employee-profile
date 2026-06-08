@@ -1314,7 +1314,6 @@ tbody td.col-check { padding-left: 16px; padding-right: 8px; }
 .drawer-nav-item.active {
   background: var(--100);
   color: var(--900);
-  font-weight: 600;
   border-color: transparent;
 }
 .drawer-nav-item svg {
@@ -7488,6 +7487,13 @@ function _restorePane(pane) {
 
 function closeDrawer() {
   hideProfileSearchPanel();
+  closeDrawerKebab();
+  try { closeTaxesPane(); } catch(e) {}
+  try { closeManagerHistoryPane(); } catch(e) {}
+  try { closeTimelinePane(); } catch(e) {}
+  try { closeTimeOffRequestPane(); } catch(e) {}
+  try { closePayRatesPane(); } catch(e) {}
+  document.querySelectorAll('.side-drawer.open').forEach(p => p.classList.remove('open'));
   document.getElementById('drawerOverlay').classList.remove('open');
   document.getElementById('drawer').setAttribute('aria-hidden','true');
   document.body.style.overflow = '';
