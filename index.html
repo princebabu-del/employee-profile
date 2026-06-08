@@ -7593,11 +7593,16 @@ function closeDrawerOnOverlay(e) {
   if (e.target === document.getElementById('drawerOverlay')) closeDrawer();
 }
 
+let _sideDrawerOpenAtMousedown = [];
+document.addEventListener('mousedown', (e) => {
+  _sideDrawerOpenAtMousedown = Array.from(document.querySelectorAll('.side-drawer.open'));
+}, true);
+
 function closeSideDrawerOnOutsideClick(e) {
-  const openDrawers = document.querySelectorAll('.side-drawer.open');
-  if (openDrawers.length === 0) return;
-  if (e.target.closest('.side-drawer.open')) return;
-  openDrawers.forEach(d => d.classList.remove('open'));
+  if (_sideDrawerOpenAtMousedown.length === 0) return;
+  if (e.target.closest('.side-drawer')) return;
+  _sideDrawerOpenAtMousedown.forEach(d => d.classList.remove('open'));
+  _sideDrawerOpenAtMousedown = [];
 }
 
 function toggleDrawerKebab(e) {
