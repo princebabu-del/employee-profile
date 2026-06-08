@@ -13920,8 +13920,8 @@ function buildProfileSearchIndex() {
   // Table key values — credential names, document names, onboarding task names
   // (column headers like "Task" / "Document" are intentionally NOT indexed)
   if (typeof CREDENTIALS_DATA !== 'undefined') {
-    CREDENTIALS_DATA.forEach(c => {
-      if (c.title) items.push({ title: c.title, value: c.issuer || '', section: 'credentials', sectionLabel: 'Credentials', subsection: c.category || '', subTab: null });
+    CREDENTIALS_DATA.forEach((c, idx) => {
+      if (c.title) items.push({ title: c.title, value: c.issuer || '', section: 'credentials', sectionLabel: 'Credentials', subsection: c.category || '', subTab: null, credIdx: idx });
     });
   }
   if (typeof ONBOARDING_TASKS_DATA !== 'undefined') {
@@ -13988,7 +13988,8 @@ function renderProfileSearchResults(panel, results, q) {
     g.items.forEach(item => {
       const sub   = item.subsection ? item.subsection : '';
       const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      html += `<div class="psr-item" data-section="${esc(section)}" data-subsection="${esc(sub)}" data-subtab="${esc(item.subTab || '')}" data-title="${esc(item.title)}" data-value="${esc(item.value)}">
+      const credAttr = item.credIdx !== undefined ? ` data-cred-idx="${item.credIdx}"` : '';
+      html += `<div class="psr-item" data-section="${esc(section)}" data-subsection="${esc(sub)}" data-subtab="${esc(item.subTab || '')}" data-title="${esc(item.title)}" data-value="${esc(item.value)}"${credAttr}>
         <div class="psr-item-title">${_psrHighlight(item.title, q)}</div>
         ${item.value ? `<div class="psr-item-value">${esc(item.value)}</div>` : ''}
       </div>`;
@@ -14081,7 +14082,7 @@ function applyProfileSearchSuggestion(q) {
   runProfileSearch(q);
 }
 
-function selectProfileSearchResult(section, subsection, title, value, subTab) {
+function selectProfileSearchResult(section, subsection, title, value, subTab, credIdx) {
   const input = document.getElementById('drawerProfileSearchInput');
   const q = input ? input.value.trim() : '';
   if (q && !_profileSearchRecent.includes(q)) {
@@ -14094,6 +14095,11 @@ function selectProfileSearchResult(section, subsection, title, value, subTab) {
   const navItem = document.querySelector(`.drawer-nav-item[data-section="${section}"]`);
   if (navItem) switchDrawerSection(navItem);
   if (subTab) _restoreSubTab(section, subTab);
+
+  if (section === 'credentials' && typeof credIdx === 'number' && !Number.isNaN(credIdx)) {
+    setTimeout(() => { if (typeof openCredDetailPane === 'function') openCredDetailPane(credIdx); }, 60);
+    return;
+  }
 
   setTimeout(() => {
     const sectionBody = document.getElementById('drawerSectionBody');
@@ -14231,7 +14237,8 @@ document.addEventListener('click', function(e) {
     const subTab     = item.getAttribute('data-subtab') || '';
     const title      = item.getAttribute('data-title') || '';
     const value      = item.getAttribute('data-value') || '';
-    selectProfileSearchResult(section, subsection, title, value, subTab);
+    const credIdxAttr = item.getAttribute('data-cred-idx');
+    selectProfileSearchResult(section, subsection, title, value, subTab, credIdxAttr !== null ? parseInt(credIdxAttr, 10) : null);
   });
 })();
 
