@@ -7593,17 +7593,18 @@ function closeDrawerOnOverlay(e) {
   if (e.target === document.getElementById('drawerOverlay')) closeDrawer();
 }
 
-let _sideDrawerOpenAtMousedown = [];
+// Outside-click handling for side-drawers.
+// Approach: on mousedown (capture), close any open side-drawer if the click is outside.
+// If the click was on a trigger (a button/row with onclick that opens a side-drawer),
+// the click bubble phase will re-open the drawer with new content — net effect is "replace".
 document.addEventListener('mousedown', (e) => {
-  _sideDrawerOpenAtMousedown = Array.from(document.querySelectorAll('.side-drawer.open'));
+  const drawerEl = document.getElementById('drawer');
+  if (!drawerEl || !drawerEl.contains(e.target)) return;
+  if (e.target.closest('.side-drawer')) return;
+  document.querySelectorAll('.side-drawer.open').forEach(d => d.classList.remove('open'));
 }, true);
 
-function closeSideDrawerOnOutsideClick(e) {
-  if (_sideDrawerOpenAtMousedown.length === 0) return;
-  if (e.target.closest('.side-drawer')) return;
-  _sideDrawerOpenAtMousedown.forEach(d => d.classList.remove('open'));
-  _sideDrawerOpenAtMousedown = [];
-}
+function closeSideDrawerOnOutsideClick(e) { /* superseded by the mousedown handler above */ }
 
 function toggleDrawerKebab(e) {
   e.stopPropagation();
