@@ -1328,9 +1328,10 @@ tbody td.col-check { padding-left: 16px; padding-right: 8px; }
 .drawer-nav-item-label { flex: 1; min-width: 0; }
 .drawer-nav-badge-wrap { flex-shrink: 0; margin-left: auto; }
 .drawer-nav-badge-wrap .tooltip {
+  position: fixed;
+  bottom: auto;
   left: auto;
-  right: 0;
-  transform: none;
+  transform: translateX(-100%) translateY(-100%);
 }
 .drawer-nav-badge-wrap .tooltip::after {
   left: auto;
@@ -14597,6 +14598,17 @@ try {
 
 applyFilters();
 initAllTables();
+
+// Position fixed tooltips for sidebar nav badges (escapes overflow clipping)
+document.querySelectorAll('.drawer-nav-badge-wrap').forEach(wrap => {
+  wrap.addEventListener('mouseenter', () => {
+    const tip = wrap.querySelector('.tooltip');
+    if (!tip) return;
+    const r = wrap.getBoundingClientRect();
+    tip.style.left = (r.right) + 'px';
+    tip.style.top  = (r.top - 6) + 'px';
+  });
+});
 
 try {
   const saved = JSON.parse(localStorage.getItem('ep_drawer') || 'null');
