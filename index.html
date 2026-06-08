@@ -8195,7 +8195,12 @@ function buildJobSectionHTML() {
   </div>
 
   <div class="section">
-    <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Manager &amp; Reports</span></div></div>
+    <div class="section-hd">
+      <div class="section-hd-text"><span class="pay-sh">Manager &amp; Reports</span></div>
+      <div class="section-hd-action">
+        <button class="btn-link" onclick="toast('View Org Chart')" type="button" style="color:var(--700);display:inline-flex;align-items:center;gap:4px;">View Org Chart<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M5 2H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9M8 1h5m0 0v5m0-5L6 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>
     <div style="grid-column: 1 / 13; display:grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
       <div class="ov-sidebar-inner">
         <div style="display:flex;flex-direction:column;gap:24px;">
