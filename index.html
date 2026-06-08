@@ -1326,12 +1326,22 @@ tbody td.col-check { padding-left: 16px; padding-right: 8px; }
 }
 .drawer-nav-item.active svg { color: var(--900); }
 .drawer-nav-item-label { flex: 1; min-width: 0; }
+.drawer-nav-count {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--500);
+}
+.drawer-nav-item[data-section="overview"] .drawer-nav-count { color: var(--red, #f04438); }
 .drawer-nav-badge-wrap { flex-shrink: 0; margin-left: auto; }
 .drawer-nav-badge-wrap .tooltip {
   position: fixed;
-  bottom: auto;
+  top: auto;
   left: auto;
-  transform: translateX(-100%) translateY(-100%);
+  bottom: auto;
+  right: auto;
+  transform: none;
 }
 .drawer-nav-badge-wrap .tooltip::after {
   left: auto;
@@ -6560,7 +6570,7 @@ select.cred-drawer-input option { color: var(--900); }
       <div class="drawer-nav-item active" data-section="overview" onclick="switchDrawerSection(this)">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>
         <span class="drawer-nav-item-label">Overview</span>
-        <span class="tooltip-wrap drawer-nav-badge-wrap"><span class="drawer-nav-badge" id="drawerNavBadge-overview">3</span><span class="tooltip">3 Issues</span></span>
+        <span class="drawer-nav-count" id="drawerNavCount-overview">3 Issues</span>
       </div>
       <div class="drawer-nav-item" data-section="profile" onclick="switchDrawerSection(this)">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 17c0-3.5 3-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -6577,7 +6587,7 @@ select.cred-drawer-input option { color: var(--900); }
       <div class="drawer-nav-item" data-section="timeoff" onclick="switchDrawerSection(this)">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5h-15A7.5 7.5 0 0 1 10 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 10v6.5a1.5 1.5 0 0 1-3 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 2.5v7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         <span class="drawer-nav-item-label">Time Off</span>
-        <span class="tooltip-wrap drawer-nav-badge-wrap"><span class="drawer-nav-badge" id="drawerNavBadge-timeoff">1</span><span class="tooltip">1 pending requests</span></span>
+        <span class="drawer-nav-count" id="drawerNavCount-timeoff">1 Pending Request</span>
       </div>
       <div class="drawer-nav-item" data-section="pay" onclick="switchDrawerSection(this)">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="1.75" y="4.5" width="16.5" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2.25" stroke="currentColor" stroke-width="1.5"/><path d="M4.5 8v4M15.5 8v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -14599,16 +14609,6 @@ try {
 applyFilters();
 initAllTables();
 
-// Position fixed tooltips for sidebar nav badges (escapes overflow clipping)
-document.querySelectorAll('.drawer-nav-badge-wrap').forEach(wrap => {
-  wrap.addEventListener('mouseenter', () => {
-    const tip = wrap.querySelector('.tooltip');
-    if (!tip) return;
-    const r = wrap.getBoundingClientRect();
-    tip.style.left = (r.right) + 'px';
-    tip.style.top  = (r.top - 6) + 'px';
-  });
-});
 
 try {
   const saved = JSON.parse(localStorage.getItem('ep_drawer') || 'null');
