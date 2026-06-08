@@ -8181,55 +8181,17 @@ function buildJobSectionHTML() {
   <div class="section">
     <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Manager &amp; Reports</span></div></div>
     <div style="grid-column: 1 / 13; display:grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-      <div>
-        <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Manager</span></div></div>
-        <div class="ov-sidebar-inner">
-          <div style="display:flex;flex-direction:column;gap:16px;">${MANAGER_HISTORY.filter(m => m.status === 'active').map(m => buildPersonCardHTML({ name: m.name, code: m.code, managers: 1, reportees: m.reportees })).join('')}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
-          <button class="btn" onclick="toast('Add Manager')"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
-          <button class="btn" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button" style="border:none;color:var(--blue);padding-left:0;padding-right:0;">View Manager History</button>
+      <div class="ov-sidebar-inner">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <button class="btn" onclick="toast('Add Manager')" style="align-self:flex-start;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
+          ${MANAGER_HISTORY.filter(m => m.status === 'active').map(m => buildPersonCardHTML({ name: m.name, code: m.code, managers: 1, reportees: m.reportees })).join('')}
+          <button class="btn" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button" style="align-self:flex-start;border:none;color:var(--blue);padding-left:0;padding-right:0;">View Manager History</button>
         </div>
       </div>
-      <div>
-        <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Direct Reports</span></div></div>
-        <div class="ov-sidebar-inner">
-          <div style="display:flex;flex-direction:column;gap:16px;">${DIRECT_REPORTS.map(buildPersonCardHTML).join('')}</div>
-        </div>
-        <div style="margin-top:16px;">
-          <button class="btn" onclick="toast('Add Reports')"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Reports</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Roles &amp; Permissions</span></div></div>
-    <div class="field-grid">
-      <div class="field">
-        <label>Role</label>
-        <div class="readonly-field-row">
-          <span class="readonly-field-val">${role}</span>
-        </div>
-        <div class="field-helper-row">
-          <button class="btn-link" onclick="openEditRoleModal('${role}')" type="button">Edit Role</button>
-        </div>
-      </div>
-      <div class="field">
-        <label>Managing Departments</label>
-        <div class="tag-input-field tag-input-select" onclick="this.querySelector('input').focus()">
-          <span class="tag-chip">Field Operations<button class="tag-chip-remove" onclick="removeWorkplaceChip(this)" type="button" title="Remove"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2L2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></span>
-          <span class="tag-chip">Safety<button class="tag-chip-remove" onclick="removeWorkplaceChip(this)" type="button" title="Remove"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2L2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></span>
-          <input type="text" onkeydown="addWorkplaceChip(event, this)" />
-          <svg class="tag-select-chevron" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#667085" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-      </div>
-      <div class="field">
-        <label>Managing Crews</label>
-        <div class="tag-input-field tag-input-select" onclick="this.querySelector('input').focus()">
-          <span class="tag-chip">Morning Crew<button class="tag-chip-remove" onclick="removeWorkplaceChip(this)" type="button" title="Remove"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2L2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></span>
-          <input type="text" onkeydown="addWorkplaceChip(event, this)" />
-          <svg class="tag-select-chevron" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#667085" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="ov-sidebar-inner">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <button class="btn" onclick="toast('Add Reports')" style="align-self:flex-start;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Reports</button>
+          ${DIRECT_REPORTS.map(buildPersonCardHTML).join('')}
         </div>
       </div>
     </div>
