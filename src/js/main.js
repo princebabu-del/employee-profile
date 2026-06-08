@@ -1317,8 +1317,11 @@ function buildTimesheetSectionHTML() {
         </thead>
         <tbody>${entryRowsHTML}</tbody>
       </table>
+      <div class="tsv-bottom-bar">
+        ${bottomIcons.map(ico => `<button class="tsv-bottom-btn" onclick="toast('Action')">${ico}</button>`).join('')}
+      </div>
     </div>
-    <button class="btn" onclick="toast('Add Timesheet')">
+    <button class="btn" style="align-self: flex-start;" onclick="toast('Add Timesheet')">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       Add Timesheet
     </button>
