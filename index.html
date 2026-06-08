@@ -1335,11 +1335,29 @@ tbody td.col-check { padding-left: 16px; padding-right: 8px; }
   height: 20px;
   padding: 0 6px;
   border-radius: 999px;
-  background: var(--red, #f04438);
-  color: var(--white);
+  background: var(--200);
+  color: var(--700);
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
+}
+.drawer-nav-item[data-section="overview"] .drawer-nav-badge {
+  background: var(--red, #f04438);
+  color: var(--white);
+}
+.drawer-nav-item.active .drawer-nav-badge {
+  min-width: 8px;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  font-size: 0;
+  color: transparent;
+}
+.drawer-nav-item.active[data-section="overview"] .drawer-nav-badge {
+  background: var(--red, #f04438);
+}
+.drawer-nav-item.active:not([data-section="overview"]) .drawer-nav-badge {
+  background: var(--400);
 }
 
 .drawer-sidebar-footer {
@@ -2511,6 +2529,10 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
   font-size: 14px;
   font-weight: 500;
   vertical-align: middle;
+}
+.pay-count-badge--red {
+  background: var(--red-bg);
+  color: var(--red-text);
 }
 .section-hd-text { display: flex; flex-direction: column; gap: 0; }
 .section-hd-action { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
@@ -7793,7 +7815,7 @@ function buildOverviewSectionHTML() {
     <div class="ov-main">
 
       <div class="section">
-        <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Action Center</span></div></div>
+        <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Action Center <span class="pay-count-badge pay-count-badge--red">3</span></span></div></div>
         <div class="ov-issues-list">
           <div class="ov-issue-item">
             <div class="ov-issue-body">
