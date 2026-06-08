@@ -13774,20 +13774,31 @@ function buildProfileSearchIndex() {
     items.push({ title, value: '', section, sectionLabel, subsection: '', subTab: subTab || null });
   }
 
-  // Section headings
-  ['Issues', 'Manager & Reports', 'Leave', 'Time Off'].forEach(h => heading(h, 'overview', 'Overview'));
-  ['Personal', 'Contact', 'Emergency Contact'].forEach(h => heading(h, 'profile', 'Profile'));
-  ['Employment', 'Schedule', 'Workplaces'].forEach(h => heading(h, 'job', 'Job'));
-  heading('Financial Information', 'pay', 'Pay', 'overview');
-  heading('Pay Rates',  'pay', 'Pay', 'payrates');
-  heading('Deductions', 'pay', 'Pay', 'deductions');
+  // Section headings — kept in sync with what the build* functions render in each tab.
+  // Overview
+  ['Action Center', 'Upcoming Time Off', 'Shift Overview', 'Manager & Reports'].forEach(h => heading(h, 'overview', 'Overview'));
+  // Profile
+  ['Personal', 'Contact', 'Address', 'Emergency Contact', 'Notes'].forEach(h => heading(h, 'profile', 'Profile'));
+  // Job
+  ['Employment', 'Workplace', 'Shift', 'Union & Program'].forEach(h => heading(h, 'job', 'Job'));
+  // Pay sub-tabs
+  ['Earnings', 'Benefits & Deductions', 'Taxes', 'Garnishments', 'Financial Information'].forEach(h => heading(h, 'pay', 'Pay', 'overview'));
+  heading('Paystubs', 'pay', 'Pay', 'paystubs');
+  ['Active Deductions', 'Deduction History'].forEach(h => heading(h, 'pay', 'Pay', 'deductions'));
+  ['Pay Rate Rules', 'Default Pay Rate', 'Active Pay Rates', 'Travel & Subsistence Pay Rates', 'Union Pay Rate'].forEach(h => heading(h, 'pay', 'Pay', 'payrates'));
   heading('Reimbursements', 'pay', 'Pay', 'reimbursements');
-  heading('Tax Information', 'pay', 'Pay', 'taxinfo');
-  ['Leave Balances', 'Upcoming Time Off'].forEach(h => heading(h, 'timeoff', 'Time Off', 'leave'));
+  heading('Tax Configuration', 'pay', 'Pay', 'taxinfo');
+  // Time Off sub-tabs
+  ['Leave Requests', 'Leave Policy Assignment', 'Leave History'].forEach(h => heading(h, 'timeoff', 'Time Off', 'leave'));
+  heading('Holiday Calendar', 'timeoff', 'Time Off', 'holiday');
+  // Benefits
   ['Benefits Assigned', 'Benefits Category'].forEach(h => heading(h, 'benefits', 'Benefits'));
-  ['Lumber Mobile Application Controls', 'User Login Controls', 'Kiosk Mode', 'Lumber ID'].forEach(h => heading(h, 'access', 'Access & Controls'));
-  ['Recognition', 'Achievements'].forEach(h => heading(h, 'awards', 'Awards'));
-  ['Assigned Tasks'].forEach(h => heading(h, 'assignments', 'Onboarding'));
+  // Roles & Permissions (data-section="access" but labeled "Roles & Permissions" in the sidebar)
+  ['Roles & Permissions', 'Lumber Mobile Application Controls', 'User Login Controls', 'Kiosk Mode', 'Lumber ID'].forEach(h => heading(h, 'access', 'Roles & Permissions'));
+  // Awards
+  ['Achievements', 'Recognitions'].forEach(h => heading(h, 'awards', 'Awards'));
+  // Onboarding
+  heading('Assigned Tasks', 'assignments', 'Onboarding');
 
   // Profile — Personal
   field('First Name',       r.first,    'profile', 'Profile', 'Personal');
@@ -13875,13 +13886,13 @@ function buildProfileSearchIndex() {
   field('Department', '', 'benefits', 'Benefits', 'Benefits Category');
 
   // Access & Controls
-  field('Disable Clock In',        'Mobile Clock In',         'access', 'Access & Controls', 'Lumber Mobile Application Controls');
-  field('Allow Login',             'Lumber Application',      'access', 'Access & Controls', 'User Login Controls');
-  field('Kiosk Mode',              'PIN',                     'access', 'Access & Controls', 'Kiosk Mode');
-  field('Generate PIN',            '',                        'access', 'Access & Controls', 'Kiosk Mode');
-  field('Employee ID',             r.code,                    'access', 'Access & Controls', 'Lumber ID');
-  field('Secondary Employee ID',   '',                        'access', 'Access & Controls', 'Lumber ID');
-  field('CheckHQ ID',              '',                        'access', 'Access & Controls', 'Lumber ID');
+  field('Disable Clock In',        'Mobile Clock In',         'access', 'Roles & Permissions', 'Lumber Mobile Application Controls');
+  field('Allow Login',             'Lumber Application',      'access', 'Roles & Permissions', 'User Login Controls');
+  field('Kiosk Mode',              'PIN',                     'access', 'Roles & Permissions', 'Kiosk Mode');
+  field('Generate PIN',            '',                        'access', 'Roles & Permissions', 'Kiosk Mode');
+  field('Employee ID',             r.code,                    'access', 'Roles & Permissions', 'Lumber ID');
+  field('Secondary Employee ID',   '',                        'access', 'Roles & Permissions', 'Lumber ID');
+  field('CheckHQ ID',              '',                        'access', 'Roles & Permissions', 'Lumber ID');
 
   // Awards
   field('Award',       'Speed Recognition',   'awards', 'Awards', 'Recognition');
@@ -14096,11 +14107,16 @@ function selectProfileSearchResult(section, subsection, title, value, subTab) {
       if (info.labelText === titleLower || info.combined === titleLower) target = fieldEl;
     });
 
-    // 2. Exact match on a section heading
+    // 2. Match on a section heading — strip count-badge elements so e.g. "Action Center 3" → "Action Center"
     if (!target) {
+      const cleanHeadingText = (h) => {
+        const clone = h.cloneNode(true);
+        clone.querySelectorAll('.pay-count-badge, .tab-badge, .drawer-nav-count').forEach(b => b.remove());
+        return clone.textContent.replace(/\s+/g, ' ').trim().toLowerCase();
+      };
       sectionBody.querySelectorAll('.pay-sh, h3').forEach(h => {
         if (target) return;
-        if (h.textContent.trim().toLowerCase() === titleLower) target = h.closest('.section') || h;
+        if (cleanHeadingText(h) === titleLower) target = h.closest('.section') || h;
       });
     }
 
