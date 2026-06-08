@@ -5425,6 +5425,22 @@ select.cred-drawer-input option { color: var(--900); }
   align-items: flex-start;
   gap: 10px;
 }
+.person-cell-remove {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--500);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.person-cell-remove:hover { background: var(--50); color: var(--800); }
 .ov-manager-avatar {
   width: 32px; height: 32px;
   border-radius: 6px;
@@ -8495,7 +8511,16 @@ function buildPersonCardHTML(p) {
         <span class="ov-manager-name">${p.name}</span>
         <span class="ov-manager-role"># ${p.code} · ${mgrCount} Manager · ${rptCount} reportees</span>
       </div>
+      <button class="person-cell-remove" onclick="removePersonAssignment(this, '${p.name}')" type="button" title="Remove">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M14 6L6 14M6 6l8 8" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>`;
+}
+
+function removePersonAssignment(btn, name) {
+  const cell = btn.closest('.ov-manager-cell');
+  if (cell) cell.remove();
+  toast(`Removed ${name}`);
 }
 
 function openManagerHistoryPane() {
