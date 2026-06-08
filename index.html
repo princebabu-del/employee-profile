@@ -6556,7 +6556,7 @@ select.cred-drawer-input option { color: var(--900); }
       </div>
       <div class="drawer-nav-item" data-section="access" onclick="switchDrawerSection(this)">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="5" y="9" width="10" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 9V6a3 3 0 0 1 6 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="13" r="1.2" fill="currentColor"/></svg>
-        Access &amp; Controls
+        Roles &amp; Permissions
       </div>
       <div class="drawer-nav-item" data-section="awards" onclick="switchDrawerSection(this)">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M6 3h8v6a4 4 0 0 1-8 0V3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M6 5H3v2a3 3 0 0 0 3 3M14 5h3v2a3 3 0 0 1-3 3M8 13h4l-1 4H9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
@@ -7957,7 +7957,6 @@ function buildOverviewSectionHTML() {
 function buildJobSectionHTML(tab) {
   tab = tab || 'general';
   if (tab === 'managerreports')   return buildJobManagerReportsHTML();
-  if (tab === 'rolespermissions') return buildJobRolesPermissionsHTML();
   // fall through → General tab
   const r         = currentDrawerEmployee;
   const role      = r ? r.role       : 'Worker';
@@ -11881,7 +11880,7 @@ function switchDrawerSection(el) {
     profile: 'Profile', job: 'Job', timeattendance: 'Time & Attendance',
     pay: 'Pay', timeoff: 'Time Off', benefits: 'Benefits', scheduler: 'Scheduler',
     credentials: 'Credentials', assignments: 'Onboarding', documents: 'Documents',
-    awards: 'Awards', access: 'Access & Controls'
+    awards: 'Awards', access: 'Roles & Permissions'
   };
   document.getElementById('drawer-section-title').textContent = titles[section] || 'Profile';
   const sectionsWithSubnav = ['job', 'timeattendance', 'pay', 'timeoff', 'documents', 'scheduler'];
@@ -11890,8 +11889,7 @@ function switchDrawerSection(el) {
   if (section === 'job') {
     subnavBar.innerHTML = `
       <button class="ta-subnav-btn active" data-tab="general" onclick="switchJobTab(this,'general')">General</button>
-      <button class="ta-subnav-btn" data-tab="managerreports" onclick="switchJobTab(this,'managerreports')">Manager &amp; Reports</button>
-      <button class="ta-subnav-btn" data-tab="rolespermissions" onclick="switchJobTab(this,'rolespermissions')">Roles &amp; Permissions</button>`;
+      <button class="ta-subnav-btn" data-tab="managerreports" onclick="switchJobTab(this,'managerreports')">Manager &amp; Reports</button>`;
   } else if (section === 'timeattendance') {
     subnavBar.innerHTML = `
       <button class="ta-subnav-btn active" data-tab="timesheet" onclick="switchTimeAttendanceTab(this)">Timesheet</button>
@@ -14202,8 +14200,41 @@ function buildAccessControlsSectionHTML() {
   const empId = r ? (r.code || `EMP${String(r.id).padStart(4,'0')}`) : 'EMP0001';
   const secId = r ? `SEC-${String(r.id).padStart(6,'0')}` : 'SEC-000001';
   const chkId = r ? `CHQ-${String(r.id * 7 + 4812).padStart(8,'0')}` : 'CHQ-00004816';
+  const role  = r ? r.role : 'Worker';
 
   return `<div class="drawer-content-body">
+  <div class="section">
+    <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Roles &amp; Permissions</span></div></div>
+    <div class="field-grid">
+      <div class="field">
+        <label>Role</label>
+        <div class="readonly-field-row">
+          <span class="readonly-field-val">${role}</span>
+        </div>
+        <div class="field-helper-row">
+          <button class="btn-link" onclick="openEditRoleModal('${role}')" type="button">Edit Role</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Managing Departments</label>
+        <div class="tag-input-field tag-input-select" onclick="this.querySelector('input').focus()">
+          <span class="tag-chip">Field Operations<button class="tag-chip-remove" onclick="removeWorkplaceChip(this)" type="button" title="Remove"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2L2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></span>
+          <span class="tag-chip">Safety<button class="tag-chip-remove" onclick="removeWorkplaceChip(this)" type="button" title="Remove"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2L2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></span>
+          <input type="text" onkeydown="addWorkplaceChip(event, this)" />
+          <svg class="tag-select-chevron" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#667085" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="field">
+        <label>Managing Crews</label>
+        <div class="tag-input-field tag-input-select" onclick="this.querySelector('input').focus()">
+          <span class="tag-chip">Morning Crew<button class="tag-chip-remove" onclick="removeWorkplaceChip(this)" type="button" title="Remove"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2L2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></span>
+          <input type="text" onkeydown="addWorkplaceChip(event, this)" />
+          <svg class="tag-select-chevron" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#667085" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="section">
     <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Lumber Mobile Application Controls</span></div></div>
     <div class="pr-toggle-inline">
