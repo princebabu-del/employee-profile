@@ -8182,14 +8182,14 @@ function buildJobSectionHTML() {
     <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Manager &amp; Reports</span></div></div>
     <div style="grid-column: 1 / 13; display:grid; grid-template-columns: 1fr 1fr; gap: 24px;">
       <div class="ov-sidebar-inner">
-        <div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;flex-direction:column;gap:24px;">
           <button class="btn" onclick="toast('Add Manager')" style="align-self:flex-start;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
           ${MANAGER_HISTORY.filter(m => m.status === 'active').map(m => buildPersonCardHTML({ name: m.name, code: m.code, managers: 1, reportees: m.reportees })).join('')}
           <button class="btn" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button" style="align-self:flex-start;border:none;color:var(--blue);padding-left:0;padding-right:0;">View Manager History</button>
         </div>
       </div>
       <div class="ov-sidebar-inner">
-        <div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;flex-direction:column;gap:24px;">
           <button class="btn" onclick="toast('Add Reports')" style="align-self:flex-start;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Reports</button>
           ${DIRECT_REPORTS.map(buildPersonCardHTML).join('')}
         </div>
