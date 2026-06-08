@@ -8196,7 +8196,7 @@ function buildJobSectionHTML() {
 
   <div class="section">
     <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Manager &amp; Reports</span></div></div>
-    <div style="grid-column: 1 / 13; display:grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    <div style="grid-column: 1 / 13; display:grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
       <div class="ov-sidebar-inner">
         <div style="display:flex;flex-direction:column;gap:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
@@ -8211,7 +8211,7 @@ function buildJobSectionHTML() {
         <div style="display:flex;flex-direction:column;gap:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
             <span style="font-size:16px;font-weight:600;color:var(--900);">Direct Reports</span>
-            <button class="btn" onclick="toast('Add Reports')" type="button" style="border:none;color:var(--blue);padding:0;line-height:1;height:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Reports</button>
+            <button class="btn" onclick="toast('Add Direct Report')" type="button" style="border:none;color:var(--blue);padding:0;line-height:1;height:auto;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Direct Report</button>
           </div>
           ${DIRECT_REPORTS.map(buildPersonCardHTML).join('')}
         </div>
