@@ -7452,8 +7452,10 @@ function openDrawer(id, restoreSection, restoreSubTab, restorePane) {
   document.getElementById('d-role').textContent = r.title || r.role || 'Worker';
   document.getElementById('d-clocked').textContent = 'Clocked In: Mon, 08:00 AM';
 
-  document.getElementById('p-first').value = r.first || '';
-  document.getElementById('p-last').value = r.last || '';
+  const pFirst = document.getElementById('p-first');
+  const pLast  = document.getElementById('p-last');
+  if (pFirst) pFirst.value = r.first || '';
+  if (pLast)  pLast.value  = r.last  || '';
 
   currentDrawerEmployee = r;
   _profileSearchIndex = buildProfileSearchIndex();
@@ -8194,24 +8196,22 @@ function buildJobManagerReportsHTML() {
   return `<div class="drawer-content-body">
   <div class="job-grid">
     <div class="section" style="grid-column: 1 / 7;">
-      <div class="section-hd">
-        <div class="section-hd-text"><span class="pay-sh">Manager</span></div>
-        <div class="section-hd-action"><button class="btn" onclick="toast('Add Manager')">${plusIco}Add Manager</button></div>
-      </div>
+      <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Manager</span></div></div>
       <div class="ov-sidebar-inner">
         <div style="display:flex;flex-direction:column;gap:16px;">${mgrCards}</div>
-        <div style="margin-top:16px;">
-          <button class="btn-link" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button">View Manager History</button>
-        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
+        <button class="btn" onclick="toast('Add Manager')">${plusIco}Add Manager</button>
+        <button class="btn-link" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button">View Manager History</button>
       </div>
     </div>
     <div class="section" style="grid-column: 7 / 13;">
-      <div class="section-hd">
-        <div class="section-hd-text"><span class="pay-sh">Direct Reports</span></div>
-        <div class="section-hd-action"><button class="btn" onclick="toast('Add Reports')">${plusIco}Add Reports</button></div>
-      </div>
+      <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Direct Reports</span></div></div>
       <div class="ov-sidebar-inner">
         <div style="display:flex;flex-direction:column;gap:16px;">${rptCards}</div>
+      </div>
+      <div style="margin-top:16px;">
+        <button class="btn" onclick="toast('Add Reports')">${plusIco}Add Reports</button>
       </div>
     </div>
   </div>
