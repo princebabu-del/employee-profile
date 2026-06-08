@@ -1352,7 +1352,8 @@ tbody td.col-check { padding-left: 16px; padding-right: 8px; }
   content: '';
   position: absolute;
   top: 100%;
-  right: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   border: 5px solid transparent;
   border-top-color: var(--900);
 }
@@ -14639,12 +14640,16 @@ initAllTables();
   document.querySelectorAll('.drawer-nav-count[data-tooltip]').forEach(el => {
     el.addEventListener('mouseenter', () => {
       tip.textContent = el.getAttribute('data-tooltip') || '';
+      tip.style.right = 'auto';
+      tip.style.bottom = 'auto';
+      tip.style.left = '0px';
+      tip.style.top = '0px';
       tip.style.display = 'block';
-      tip.style.left = 'auto';
-      tip.style.top  = 'auto';
       const r = el.getBoundingClientRect();
-      tip.style.right  = (window.innerWidth - r.right)  + 'px';
-      tip.style.bottom = (window.innerHeight - r.top + 8) + 'px';
+      const tipRect = tip.getBoundingClientRect();
+      const centerX = r.left + r.width / 2;
+      tip.style.left = (centerX - tipRect.width / 2) + 'px';
+      tip.style.top  = (r.top - tipRect.height - 8) + 'px';
     });
     el.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
   });
