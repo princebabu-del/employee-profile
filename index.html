@@ -1197,7 +1197,7 @@ tbody td.col-check { padding-left: 16px; padding-right: 8px; }
 
 .drawer-search-row {
   display: flex; align-items: center; gap: 8px;
-  padding: 0;
+  padding: 0 12px;
   margin-top: 24px;
 }
 .drawer-search {
@@ -5423,7 +5423,6 @@ select.cred-drawer-input option { color: var(--900); }
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin-top: 5px;
 }
 .ov-manager-avatar {
   width: 32px; height: 32px;
@@ -8186,17 +8185,21 @@ function buildJobManagerReportsHTML() {
   <div class="job-grid">
     <div class="section" style="grid-column: 1 / 7;">
       <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Manager</span></div></div>
-      <div style="display:flex;flex-direction:column;gap:16px;">${mgrCards}</div>
-      <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
-        <button class="btn" onclick="toast('Add Manager')">${plusIco}Add Manager</button>
-        <button class="btn-link" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button">View Manager History</button>
+      <div class="ov-sidebar-inner">
+        <div style="display:flex;flex-direction:column;gap:16px;">${mgrCards}</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
+          <button class="btn" onclick="toast('Add Manager')">${plusIco}Add Manager</button>
+          <button class="btn-link" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button">View Manager History</button>
+        </div>
       </div>
     </div>
     <div class="section" style="grid-column: 7 / 13;">
       <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Direct Reports</span></div></div>
-      <div style="display:flex;flex-direction:column;gap:16px;">${rptCards}</div>
-      <div style="margin-top:16px;">
-        <button class="btn" onclick="toast('Add Reports')">${plusIco}Add Reports</button>
+      <div class="ov-sidebar-inner">
+        <div style="display:flex;flex-direction:column;gap:16px;">${rptCards}</div>
+        <div style="margin-top:16px;">
+          <button class="btn" onclick="toast('Add Reports')">${plusIco}Add Reports</button>
+        </div>
       </div>
     </div>
   </div>
