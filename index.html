@@ -8184,22 +8184,24 @@ function buildJobManagerReportsHTML() {
   return `<div class="drawer-content-body">
   <div class="job-grid">
     <div class="section" style="grid-column: 1 / 7;">
-      <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Manager</span></div></div>
+      <div class="section-hd">
+        <div class="section-hd-text"><span class="pay-sh">Manager</span></div>
+        <div class="section-hd-action"><button class="btn" onclick="toast('Add Manager')">${plusIco}Add Manager</button></div>
+      </div>
       <div class="ov-sidebar-inner">
         <div style="display:flex;flex-direction:column;gap:16px;">${mgrCards}</div>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
-          <button class="btn" onclick="toast('Add Manager')">${plusIco}Add Manager</button>
+        <div style="margin-top:16px;">
           <button class="btn-link" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button">View Manager History</button>
         </div>
       </div>
     </div>
     <div class="section" style="grid-column: 7 / 13;">
-      <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Direct Reports</span></div></div>
+      <div class="section-hd">
+        <div class="section-hd-text"><span class="pay-sh">Direct Reports</span></div>
+        <div class="section-hd-action"><button class="btn" onclick="toast('Add Reports')">${plusIco}Add Reports</button></div>
+      </div>
       <div class="ov-sidebar-inner">
         <div style="display:flex;flex-direction:column;gap:16px;">${rptCards}</div>
-        <div style="margin-top:16px;">
-          <button class="btn" onclick="toast('Add Reports')">${plusIco}Add Reports</button>
-        </div>
       </div>
     </div>
   </div>
