@@ -6504,7 +6504,7 @@ select.cred-drawer-input option { color: var(--900); }
   </svg>
 </button>
 <div class="profile-search-panel" id="profileSearchPanel"></div>
-<aside class="drawer" id="drawer" aria-hidden="true">
+<aside class="drawer" id="drawer" aria-hidden="true" onclick="closeSideDrawerOnOutsideClick(event)">
   <div class="drawer-sidebar">
     <div class="sidebar-status" id="sidebarStatusBand" onclick="cycleStatusBand()" style="cursor:pointer;" title="Click to cycle status (demo)">
       <span class="sidebar-status-dot" id="sidebarStatusDot"></span>
@@ -7591,6 +7591,13 @@ function closeDrawer() {
 
 function closeDrawerOnOverlay(e) {
   if (e.target === document.getElementById('drawerOverlay')) closeDrawer();
+}
+
+function closeSideDrawerOnOutsideClick(e) {
+  const openDrawers = document.querySelectorAll('.side-drawer.open');
+  if (openDrawers.length === 0) return;
+  if (e.target.closest('.side-drawer.open')) return;
+  openDrawers.forEach(d => d.classList.remove('open'));
 }
 
 function toggleDrawerKebab(e) {
