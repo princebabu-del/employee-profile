@@ -8201,7 +8201,7 @@ function buildJobSectionHTML() {
         <div style="display:flex;flex-direction:column;gap:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
             <span style="font-size:16px;font-weight:600;color:var(--900);">Manager</span>
-            <button class="btn" onclick="toast('Add Manager')" type="button" style="border:none;color:var(--blue);padding-left:0;padding-right:0;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
+            <button class="btn" onclick="toast('Add Manager')" type="button" style="border:none;color:var(--blue);padding:0;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
           </div>
           ${MANAGER_HISTORY.filter(m => m.status === 'active').map(m => buildPersonCardHTML({ name: m.name, code: m.code, managers: 1, reportees: m.reportees })).join('')}
           <button class="btn" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button" style="align-self:flex-start;border:none;color:var(--blue);padding-left:0;padding-right:0;">View Manager History</button>
@@ -8211,7 +8211,7 @@ function buildJobSectionHTML() {
         <div style="display:flex;flex-direction:column;gap:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
             <span style="font-size:16px;font-weight:600;color:var(--900);">Direct Reports</span>
-            <button class="btn" onclick="toast('Add Reports')" type="button" style="border:none;color:var(--blue);padding-left:0;padding-right:0;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Reports</button>
+            <button class="btn" onclick="toast('Add Reports')" type="button" style="border:none;color:var(--blue);padding:0;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Reports</button>
           </div>
           ${DIRECT_REPORTS.map(buildPersonCardHTML).join('')}
         </div>
