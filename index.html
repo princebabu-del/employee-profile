@@ -6570,15 +6570,6 @@ select.cred-drawer-input option { color: var(--900); }
         </button>
       </div>
       <div class="drawer-kebab-menu" id="drawerKebabMenu" style="display:none;">
-        <button class="drawer-kebab-item" onclick="closeDrawerKebab();toast('Employee disabled')">
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M4.5 10h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          Disable
-        </button>
-        <button class="drawer-kebab-item drawer-kebab-item--danger" onclick="closeDrawerKebab();toast('Employee terminated')">
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          Terminate
-        </button>
-        <div class="drawer-kebab-divider"></div>
         <button class="drawer-kebab-item" onclick="closeDrawerKebab();openCompaniesModal()">
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 17.5V4.5a1.5 1.5 0 0 1 1.5-1.5H10a1.5 1.5 0 0 1 1.5 1.5v13M11.5 9h4A1.5 1.5 0 0 1 17 10.5v7M3 17.5h14M5.75 7h2.5M5.75 10h2.5M5.75 13h2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Companies
@@ -6586,6 +6577,15 @@ select.cred-drawer-input option { color: var(--900); }
         <button class="drawer-kebab-item" onclick="closeDrawerKebab();toast('Opening audit trail')">
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 5v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 10a6.5 6.5 0 1 0 1.1-3.6L3 5v3.5h3.5L5 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Audit Trail
+        </button>
+        <div class="drawer-kebab-divider"></div>
+        <button class="drawer-kebab-item" onclick="closeDrawerKebab();toast('Employee disabled')">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M4.5 10h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Disable
+        </button>
+        <button class="drawer-kebab-item drawer-kebab-item--danger" onclick="closeDrawerKebab();toast('Employee terminated')">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Terminate
         </button>
       </div>
     </div>
@@ -12012,7 +12012,7 @@ function switchDrawerSection(el) {
       <button class="ta-subnav-btn active" data-tab="timesheet" onclick="switchTimeAttendanceTab(this)">Timesheet</button>
       <button class="ta-subnav-btn" data-tab="exceptions" onclick="switchTimeAttendanceTab(this)">Attendance Exceptions</button>`;
   } else if (section === 'pay') {
-    const payTabs = [['Overview','overview'],['Paystubs','paystubs'],['Deductions','deductions'],['Pay Rates','payrates'],['Reimbursements','reimbursements'],['Tax Information','taxinfo']];
+    const payTabs = [['Overview','overview'],['Pay Rates','payrates'],['Deductions','deductions'],['Reimbursements','reimbursements'],['Tax Information','taxinfo'],['Paystubs','paystubs']];
     subnavBar.innerHTML = payTabs.map(([label, id], i) =>
       `<button class="ta-subnav-btn${i===0?' active':''}" data-tab="${id}" onclick="switchPayTab(this,'${id}')">${label}</button>`).join('');
   } else if (section === 'timeoff') {
