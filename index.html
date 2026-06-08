@@ -1010,6 +1010,7 @@ tbody td.col-check { padding-left: 16px; padding-right: 8px; }
   flex-shrink: 0; margin-top: 4px; z-index: 1;
 }
 .tor-activity-dot--approved { background: var(--green-text); }
+.tor-activity-dot--danger { background: var(--red-text); }
 .tor-activity-line {
   position: absolute; left: 5px; top: 16px; bottom: 0;
   width: 2px; background: var(--200);
@@ -13076,37 +13077,38 @@ function openCredDetailPane(idx) {
   document.getElementById('credDetailPane').classList.add('open');
 }
 
-const _credActivityLog = `
+function _buildCredActivityLog(c) {
+  const events = [];
+  const status = c.status;
+  if (status === 'Expired') {
+    events.push({ label: 'Expired',   meta: `On ${formatCredDate(c.expires) || 'N/A'}`,    dotMod: 'tor-activity-dot--danger' });
+  }
+  if (status === 'Verified' || status === 'Verified & Expiring' || status === 'Expired') {
+    events.push({ label: 'Verified',  meta: 'By John Smith · May 27, 2026', dotMod: 'tor-activity-dot--approved' });
+  }
+  if (status !== 'Incomplete') {
+    events.push({ label: 'Completed', meta: 'By Gary Okuneva · May 21, 2026', dotMod: '' });
+  }
+  events.push({ label: 'Issued', meta: 'By Gary Okuneva · May 20, 2026', dotMod: '' });
+  const items = events.map((e, i) => {
+    const isLast = i === events.length - 1;
+    return `<div class="tor-activity-item${isLast ? ' tor-activity-item--last' : ''}">
+      <div class="tor-activity-dot ${e.dotMod}"></div>
+      ${isLast ? '' : '<div class="tor-activity-line"></div>'}
+      <div class="tor-activity-content">
+        <div class="tor-activity-primary">${e.label}</div>
+        <div class="tor-activity-secondary">${e.meta}</div>
+      </div>
+    </div>`;
+  }).join('');
+  return `
     <div class="drawer-section">
       <div class="drawer-section-hd">
         <div class="drawer-section-hd-text">Activity Log</div>
       </div>
-      <div class="tor-activity-log">
-        <div class="tor-activity-item">
-          <div class="tor-activity-dot tor-activity-dot--approved"></div>
-          <div class="tor-activity-line"></div>
-          <div class="tor-activity-content">
-            <div class="tor-activity-primary">Verified</div>
-            <div class="tor-activity-secondary">By John Smith · May 27, 2026</div>
-          </div>
-        </div>
-        <div class="tor-activity-item">
-          <div class="tor-activity-dot"></div>
-          <div class="tor-activity-line"></div>
-          <div class="tor-activity-content">
-            <div class="tor-activity-primary">Completed</div>
-            <div class="tor-activity-secondary">By Gary Okuneva · May 21, 2026</div>
-          </div>
-        </div>
-        <div class="tor-activity-item tor-activity-item--last">
-          <div class="tor-activity-dot"></div>
-          <div class="tor-activity-content">
-            <div class="tor-activity-primary">Issued</div>
-            <div class="tor-activity-secondary">By Gary Okuneva · May 20, 2026</div>
-          </div>
-        </div>
-      </div>
+      <div class="tor-activity-log">${items}</div>
     </div>`;
+}
 
 function _buildCredDocsSection(c) {
   const docs = c.documents || [];
@@ -13159,7 +13161,7 @@ function _renderCredDetailReadOnly(c) {
     ${_divider}
     ${_buildCredDocsSection(c)}
     ${_divider}
-    ${_credActivityLog}`;
+    ${_buildCredActivityLog(c)}`;
   const footer = document.getElementById('credDetailPaneFooter');
   const reminderStatuses = ['Incomplete','Expired','Verified & Expiring','Valid & Expiring'];
   if (c.status === 'Valid') {
@@ -13227,7 +13229,7 @@ function switchCredDetailToEdit() {
     <hr style="border:none;border-top:1px solid var(--150);margin:0;">
     ${_buildCredDocsSection(c)}
     <hr style="border:none;border-top:1px solid var(--150);margin:0;">
-    ${_credActivityLog}`;
+    ${_buildCredActivityLog(c)}`;
   const editFooter = document.getElementById('credDetailPaneFooter');
   editFooter.innerHTML = `<button class="btn" onclick="switchCredDetailToReadOnly()">Cancel</button><button class="btn btn-primary" onclick="toast('Changes saved');switchCredDetailToReadOnly()">Save</button>`;
   editFooter.style.display = '';
