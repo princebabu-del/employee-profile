@@ -5808,6 +5808,8 @@ select.cred-drawer-input option { color: var(--900); }
 .tl-feed-date { font-size: 14px; font-weight: 400; color: var(--500); }
 .tl-feed-badge { flex-shrink: 0; }
 .btn-link--inactive { color: var(--300); cursor: default; pointer-events: none; }
+.btn-link--gray { color: var(--700); }
+.btn-link--gray:hover { color: var(--700); }
 
 /* ── Timeline Pane (inside drawer) ── */
 .side-drawer {
@@ -8332,8 +8334,9 @@ function buildJobSectionHTML() {
           <span class="tl-field-val">CM-JM</span>
           <span class="tl-field-effective">Mar 5, 2025 – Mar 5, 2027</span>
         </div>
-        <div class="field-helper-row">
-          <button class="btn-link" id="tl-view-btn-classification" onclick="openTimelinePane('classification')" type="button">View Timeline</button>
+        <div class="field-helper-row" style="justify-content:space-between;">
+          <button class="btn-link btn-link--gray" onclick="openAddTimelineModal('classification')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add</button>
+          <button class="btn-link btn-link--gray" id="tl-view-btn-classification" onclick="openTimelinePane('classification')" type="button">View Timeline</button>
         </div>
       </div>
       <div class="field">
@@ -8342,8 +8345,9 @@ function buildJobSectionHTML() {
           <span class="tl-field-val">Journeyman</span>
           <span class="tl-field-effective">Mar 5, 2025 – Mar 5, 2028</span>
         </div>
-        <div class="field-helper-row">
-          <button class="btn-link" id="tl-view-btn-level" onclick="openTimelinePane('level')" type="button">View Timeline</button>
+        <div class="field-helper-row" style="justify-content:space-between;">
+          <button class="btn-link btn-link--gray" onclick="openAddTimelineModal('level')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add</button>
+          <button class="btn-link btn-link--gray" id="tl-view-btn-level" onclick="openTimelinePane('level')" type="button">View Timeline</button>
         </div>
       </div>
 
@@ -8365,6 +8369,14 @@ function buildJobSectionHTML() {
           <option>In Progress</option>
           <option>Completed</option>
           <option>Waived</option>
+        </select></div>
+      </div>
+      <div class="field">
+        <label>Skill Level</label>
+        <div class="select-wrapper"><select class="field-input">
+          <option value="">Select</option>
+          <option>Skilled</option>
+          <option>Trained</option>
         </select></div>
       </div>
     </div>
@@ -8471,8 +8483,9 @@ function buildJobSectionHTML() {
           <span class="tl-field-val">Cement Masons</span>
           <span class="tl-field-effective">Jun 1, 2024 – Jun 1, 2027</span>
         </div>
-        <div class="field-helper-row">
-          <button class="btn-link" id="tl-view-btn-union" onclick="openTimelinePane('union')" type="button">View Timeline</button>
+        <div class="field-helper-row" style="justify-content:space-between;">
+          <button class="btn-link btn-link--gray" onclick="openAddTimelineModal('union')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add</button>
+          <button class="btn-link btn-link--gray" id="tl-view-btn-union" onclick="openTimelinePane('union')" type="button">View Timeline</button>
         </div>
       </div>
       <div class="field">
@@ -8492,7 +8505,7 @@ function buildJobSectionHTML() {
     <div class="section-hd">
       <div class="section-hd-text"><span class="pay-sh">Manager &amp; Reports</span></div>
       <div class="section-hd-action">
-        <button class="btn-link" onclick="toast('View Org Chart')" type="button" style="color:var(--700);display:inline-flex;align-items:center;gap:4px;">View Org Chart<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M5 2H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9M8 1h5m0 0v5m0-5L6 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="btn-link btn-link--gray" onclick="toast('View Org Chart')" type="button" style="display:inline-flex;align-items:center;gap:4px;">View Org Chart<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M5 2H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9M8 1h5m0 0v5m0-5L6 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </div>
     </div>
     <div style="grid-column: 1 / 13; display:grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
@@ -8500,18 +8513,18 @@ function buildJobSectionHTML() {
         <div style="display:flex;flex-direction:column;gap:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
             <span style="font-size:16px;font-weight:600;color:var(--900);">Manager</span>
-            <button class="btn-link" onclick="openAddPersonModal('manager')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
+            <button class="btn-link btn-link--gray" onclick="openAddPersonModal('manager')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
           </div>
           <div style="height:1px;background:var(--150);"></div>
           ${MANAGER_HISTORY.filter(m => m.status === 'active').map(m => buildPersonCardHTML({ name: m.name, code: m.code, managers: 1, reportees: m.reportees, managedBy: 'Linda Marsh' })).join('')}
-          <button class="btn-link" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button" style="align-self:flex-start;">View Manager History</button>
+          <button class="btn-link btn-link--gray" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button" style="align-self:flex-start;">View Manager History</button>
         </div>
       </div>
       <div class="ov-sidebar-inner">
         <div style="display:flex;flex-direction:column;gap:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
             <span style="font-size:16px;font-weight:600;color:var(--900);">Direct Reports</span>
-            <button class="btn-link" onclick="openAddPersonModal('report')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Direct Report</button>
+            <button class="btn-link btn-link--gray" onclick="openAddPersonModal('report')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Direct Report</button>
           </div>
           <div style="height:1px;background:var(--150);"></div>
           ${DIRECT_REPORTS.map(buildPersonCardHTML).join('')}
@@ -10913,13 +10926,13 @@ function buildPayRates() {
     <div class="section-hd"><div class="section-hd-text"><div class="pay-sh">Financial Information</div></div></div>
     <div class="pr-field-grid">
       <div class="field pr-grid-col-4">
-        <label>Compensation Type</label>
+        <label>Compensation Type <span>*</span></label>
         <div class="select-wrapper"><select class="field-input">
           <option>Hourly</option><option>Salary</option><option>Daily</option>
         </select></div>
       </div>
       <div class="field pr-grid-col-4">
-        <label>Pay Frequency</label>
+        <label>Pay Frequency <span>*</span></label>
         <div class="select-wrapper"><select class="field-input">
           <option>Bi-weekly</option><option>Weekly</option><option>Semi-monthly</option><option>Monthly</option>
         </select></div>
