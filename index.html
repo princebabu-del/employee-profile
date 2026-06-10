@@ -4209,7 +4209,8 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
 .cred-filter-nav-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 99px; background: var(--blue); color: var(--white); font-size: 12px; font-weight: 600; line-height: 1; }
 .cred-filter-panel-reset { display: flex; justify-content: flex-start; padding: 12px; }
 .cred-filter-panel-reset .field-helper-link { font-size: 14px; font-weight: 600; color: var(--blue); background: none; border: none; padding: 0; cursor: pointer; }
-.cred-filter-panel-reset .field-helper-link:hover { opacity: 0.75; }
+.cred-filter-panel-reset .field-helper-link:hover { text-decoration: underline; text-underline-offset: 2px; }
+.cred-filter-panel-reset .field-helper-link:hover svg { text-decoration: none; }
 .cred-filter-panel-reset .field-helper-link:disabled,
 .cred-filter-panel-reset .field-helper-link[disabled] { color: var(--300); cursor: not-allowed; opacity: 1; }
 .cred-filter-reset-all { display: inline-flex; align-items: center; padding: 0 4px; background: none; border: none; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--blue); }
@@ -5704,9 +5705,10 @@ select.cred-drawer-input option { color: var(--900); }
   border: none;
   cursor: pointer;
   padding: 0;
-  transition: opacity 0.12s;
+  text-decoration: none;
 }
-.btn-link:hover { opacity: 0.75; }
+.btn-link:hover { text-decoration: underline; text-underline-offset: 2px; }
+.btn-link:hover svg { text-decoration: none; }
 .btn-link:disabled,
 .btn-link[disabled] { color: #D1E0FF; cursor: not-allowed; opacity: 1; }
 
@@ -5775,10 +5777,14 @@ select.cred-drawer-input option { color: var(--900); }
 #addTimelineSubmitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 #addTimelineModal { z-index: 500; }
 #addPersonModal { z-index: 500; }
-#addPersonModal .person-picker-dropdown { position: static; margin-top: 4px; max-height: 320px; box-shadow: none; border-color: var(--gray-border); }
+#addPersonModal .person-picker-dropdown { position: static; margin-top: -4px; max-height: 320px; box-shadow: none; border-color: var(--gray-border); }
 #addPersonModal .person-picker-list { min-height: 0; }
 #addPersonModal .modal { overflow: visible; }
 #addPersonModal .modal-body { overflow: visible; }
+.person-picker-cb { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--gray-border); background: var(--white); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.person-picker-cb.checked { background: var(--blue); border-color: var(--blue); }
+.person-picker-cb svg { display: none; }
+.person-picker-cb.checked svg { display: block; }
 .modal-title--lg { font-size: 20px; font-weight: 600; line-height: 32px; color: var(--900); }
 
 /* ── Timeline Feed ── */
@@ -6443,11 +6449,11 @@ select.cred-drawer-input option { color: var(--900); }
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
         <div class="field" style="gap:8px;">
           <label>Start Date</label>
-          <div class="date-input"><input class="field-input" type="date" id="addTimelineDateInput" oninput="updateAddTimelineBtn()" placeholder="MM/DD/YYYY" /></div>
+          <div class="date-input"><input class="field-input" id="addTimelineDateInput" oninput="updateAddTimelineBtn()" placeholder="MM/DD/YYYY" /></div>
         </div>
         <div class="field" style="gap:8px;">
           <label>End Date</label>
-          <div class="date-input"><input class="field-input" type="date" id="addTimelineEndDateInput" oninput="updateAddTimelineBtn()" placeholder="MM/DD/YYYY" /></div>
+          <div class="date-input"><input class="field-input" id="addTimelineEndDateInput" oninput="updateAddTimelineBtn()" placeholder="MM/DD/YYYY" /></div>
         </div>
       </div>
     </div>
@@ -7501,24 +7507,19 @@ const ADD_PERSON_USERS = [
 ];
 
 let _addPersonType = 'manager';     // 'manager' | 'report'
-let _addPersonSelected = null;       // selected user object
+let _addPersonSelected = [];         // selected user indices
 let _addPersonFilter = '';
 
 function openAddPersonModal(type) {
   _addPersonType = type;
-  _addPersonSelected = null;
+  _addPersonSelected = [];
   _addPersonFilter = '';
   document.getElementById('addPersonModalTitle').textContent =
     type === 'manager' ? 'Add Manager' : 'Add Direct Report';
   document.getElementById('addPersonFieldLabel').textContent =
     type === 'manager' ? 'Manager' : 'Direct Report';
-  document.getElementById('addPersonTriggerLabel').textContent = 'Select an option';
-  document.getElementById('addPersonTriggerLabel').classList.add('person-select-placeholder');
-  document.getElementById('addPersonSelected').style.display = 'none';
-  document.getElementById('addPersonSelected').innerHTML = '';
   document.getElementById('addPersonSearch').value = '';
-  document.getElementById('addPersonSubmit').disabled = true;
-  renderAddPersonList();
+  refreshAddPersonUI();
   // Open dropdown by default
   document.getElementById('addPersonDropdown').classList.add('open');
   document.getElementById('addPersonTrigger').classList.add('open');
@@ -7542,9 +7543,44 @@ function filterAddPersonList(val) {
   _addPersonFilter = (val || '').toLowerCase();
   renderAddPersonList();
 }
+function refreshAddPersonUI() {
+  // Trigger label
+  const trLabel = document.getElementById('addPersonTriggerLabel');
+  if (_addPersonSelected.length === 0) {
+    trLabel.textContent = 'Select an option';
+    trLabel.classList.add('person-select-placeholder');
+    trLabel.removeAttribute('style');
+  } else {
+    const names = _addPersonSelected.map(i => ADD_PERSON_USERS[i].name);
+    trLabel.textContent = names.length === 1 ? names[0] : `${names.length} selected`;
+    trLabel.classList.add('person-select-placeholder');
+    trLabel.removeAttribute('style');
+  }
+  // Selected cards below
+  const sel = document.getElementById('addPersonSelected');
+  if (_addPersonSelected.length === 0) {
+    sel.style.display = 'none';
+    sel.innerHTML = '';
+  } else {
+    sel.style.display = 'flex';
+    sel.style.flexDirection = 'column';
+    sel.style.gap = '12px';
+    sel.innerHTML = _addPersonSelected.map(i => {
+      const u = ADD_PERSON_USERS[i];
+      return buildPersonCardHTML({
+        name: u.name, code: u.code, managers: u.managers, reportees: u.reportees, managedBy: u.managedBy
+      }).replace(`removePersonAssignment(this, '${u.name}')`, `toggleAddPersonUser(${i})`);
+    }).join('');
+  }
+  // Submit button enabled state
+  document.getElementById('addPersonSubmit').disabled = _addPersonSelected.length === 0;
+  // Refresh dropdown list to show updated checkbox state
+  renderAddPersonList();
+}
 function renderAddPersonList() {
   const list = document.getElementById('addPersonList');
   const f = _addPersonFilter;
+  const checkSvg = `<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const rows = ADD_PERSON_USERS.filter(u =>
     !f || u.name.toLowerCase().includes(f) || u.code.includes(f)
   );
@@ -7552,12 +7588,14 @@ function renderAddPersonList() {
     list.innerHTML = `<div style="padding:24px;text-align:center;color:var(--500);font-size:14px;">No users found</div>`;
     return;
   }
-  list.innerHTML = rows.map((u, i) => {
+  list.innerHTML = rows.map(u => {
     const initials = u.name.split(' ').map(w => w[0]).join('').toUpperCase();
     const mgrText  = (u.managers === 1 && u.managedBy) ? `Managed by ${u.managedBy}` : `${u.managers} Manager${u.managers === 1 ? '' : 's'}`;
     const idx = ADD_PERSON_USERS.indexOf(u);
+    const isChecked = _addPersonSelected.indexOf(idx) >= 0;
     return `
-      <div class="person-picker-row" onclick="selectAddPersonUser(${idx})">
+      <div class="person-picker-row" onclick="toggleAddPersonUser(${idx})">
+        <div class="person-picker-cb ${isChecked ? 'checked' : ''}">${checkSvg}</div>
         <div class="ov-manager-avatar" style="width:32px;height:32px;">${initials}</div>
         <div class="person-picker-info">
           <div class="person-picker-name">${u.name}</div>
@@ -7566,52 +7604,30 @@ function renderAddPersonList() {
       </div>`;
   }).join('');
 }
-function selectAddPersonUser(idx) {
-  const u = ADD_PERSON_USERS[idx];
-  if (!u) return;
-  _addPersonSelected = u;
-  // Update trigger label
-  const trLabel = document.getElementById('addPersonTriggerLabel');
-  trLabel.textContent = u.name;
-  trLabel.classList.remove('person-select-placeholder');
-  trLabel.style.cssText = 'font-size:16px;font-weight:500;color:var(--900);';
-  // Close dropdown
-  document.getElementById('addPersonDropdown').classList.remove('open');
-  document.getElementById('addPersonTrigger').classList.remove('open');
-  // Show selected card below
-  const sel = document.getElementById('addPersonSelected');
-  sel.style.display = 'block';
-  sel.innerHTML = buildPersonCardHTML({
-    name: u.name, code: u.code, managers: u.managers, reportees: u.reportees, managedBy: u.managedBy
-  }).replace(`removePersonAssignment(this, '${u.name}')`, `clearAddPersonSelection()`);
-  // Enable Add button
-  document.getElementById('addPersonSubmit').disabled = false;
-}
-function clearAddPersonSelection() {
-  _addPersonSelected = null;
-  document.getElementById('addPersonSelected').style.display = 'none';
-  document.getElementById('addPersonSelected').innerHTML = '';
-  const trLabel = document.getElementById('addPersonTriggerLabel');
-  trLabel.textContent = 'Select';
-  trLabel.style.cssText = '';
-  trLabel.classList.add('person-select-placeholder');
-  document.getElementById('addPersonSubmit').disabled = true;
+function toggleAddPersonUser(idx) {
+  const pos = _addPersonSelected.indexOf(idx);
+  if (pos >= 0) _addPersonSelected.splice(pos, 1);
+  else          _addPersonSelected.push(idx);
+  refreshAddPersonUI();
 }
 function confirmAddPerson() {
-  if (!_addPersonSelected) return;
-  const u = _addPersonSelected;
+  if (!_addPersonSelected.length) return;
+  const users = _addPersonSelected.map(i => ADD_PERSON_USERS[i]);
   if (_addPersonType === 'manager') {
-    // Add to MANAGER_HISTORY as active
-    MANAGER_HISTORY.unshift({
-      name: u.name, code: u.code, reportees: u.reportees,
-      start: 'Jun 5, 2026', end: null, status: 'active', changedBy: 'You'
+    users.forEach(u => {
+      MANAGER_HISTORY.unshift({
+        name: u.name, code: u.code, reportees: u.reportees,
+        start: 'Jun 5, 2026', end: null, status: 'active', changedBy: 'You'
+      });
     });
-    toast(`${u.name} added as Manager`);
+    toast(users.length === 1 ? `${users[0].name} added as Manager` : `${users.length} Managers added`);
   } else {
-    DIRECT_REPORTS.push({
-      name: u.name, code: u.code, managers: u.managers, reportees: u.reportees, managedBy: u.managedBy
+    users.forEach(u => {
+      DIRECT_REPORTS.push({
+        name: u.name, code: u.code, managers: u.managers, reportees: u.reportees, managedBy: u.managedBy
+      });
     });
-    toast(`${u.name} added as Direct Report`);
+    toast(users.length === 1 ? `${users[0].name} added as Direct Report` : `${users.length} Direct Reports added`);
   }
   closeAddPersonModal();
   // Re-render Job tab if currently visible
