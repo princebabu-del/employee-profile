@@ -1016,7 +1016,7 @@ tbody td.col-check { padding-left: 16px; padding-right: 8px; }
   width: 2px; background: var(--200);
 }
 .tor-activity-content { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-.tor-activity-primary { font-size: 16px; font-weight: 500; color: var(--800); }
+.tor-activity-primary { font-size: 14px; font-weight: 600; color: var(--800); }
 .tor-activity-secondary { font-size: 14px; font-weight: 400; color: var(--500); }
 
 /* ── Toast ── */
@@ -5609,7 +5609,7 @@ select.cred-drawer-input option { color: var(--900); }
 .eh-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--300); flex-shrink: 0; margin-top: 4px; }
 .eh-line { width: 2px; flex: 1; background: var(--200); min-height: 16px; margin: 2px 0; }
 .eh-body { display: flex; flex-direction: column; gap: 4px; padding-bottom: 20px; }
-.eh-status { font-size: 16px; font-weight: 500; color: var(--900); }
+.eh-status { font-size: 14px; font-weight: 600; color: var(--900); }
 .eh-meta { font-size: 14px; font-weight: 400; color: var(--500); }
 .eh-date, .eh-comment { font-size: inherit; color: inherit; }
 .eh-item--active .eh-dot { background: var(--green-text); }
@@ -5804,7 +5804,7 @@ select.cred-drawer-input option { color: var(--900); }
 .tl-feed-item:last-child .tl-feed-content { padding-bottom: 0; }
 .tl-feed-content { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: 1; }
 .tl-feed-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.tl-feed-title { font-size: 16px; font-weight: 500; color: var(--900); line-height: 1.4; }
+.tl-feed-title { font-size: 14px; font-weight: 600; color: var(--900); line-height: 1.4; }
 .tl-feed-date { font-size: 14px; font-weight: 400; color: var(--500); }
 .tl-feed-badge { flex-shrink: 0; }
 .btn-link--inactive { color: var(--300); cursor: default; pointer-events: none; }
@@ -8223,7 +8223,7 @@ function buildOverviewSectionHTML() {
           <div class="eh-item eh-item--active">
             <div class="eh-spine"><div class="eh-dot"></div><div class="eh-line"></div></div>
             <div class="eh-body">
-              <span class="eh-status">Active</span>
+              <span class="eh-status">Enabled</span>
               <span class="eh-meta"><span class="eh-date">Jun 3, 2024</span>, <span class="eh-comment">Returned from leave of absence</span></span>
             </div>
           </div>
@@ -8237,7 +8237,7 @@ function buildOverviewSectionHTML() {
           <div class="eh-item">
             <div class="eh-spine"><div class="eh-dot"></div><div class="eh-line"></div></div>
             <div class="eh-body">
-              <span class="eh-status">Active</span>
+              <span class="eh-status">Enabled</span>
               <span class="eh-meta"><span class="eh-date">Mar 20, 2023</span>, <span class="eh-comment">Onboarding completed – became active</span></span>
             </div>
           </div>
@@ -8898,9 +8898,12 @@ function openTimelinePane(fieldType) {
     if (s === 'upcoming') return `<span class="to-status-badge" style="background:#eff8ff;border-color:#b2ddff;color:#175cd3;">Upcoming</span>`;
     return '';
   };
-  const items = d.rows.map(row => {
+  const editIco = `<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M14.5 2.5a2.121 2.121 0 0 1 3 3L7 16l-4 1 1-4 10.5-10.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const items = d.rows.map((row, idx) => {
     const [val, startDate, endDate, status] = row;
     const badge = statusBadge(status);
+    const showEdit = status === 'active' || status === 'upcoming';
+    const editBtn = showEdit ? `<button class="btn-link" onclick="openEditTimelineModal('${fieldType}', ${idx})" type="button" style="display:inline-flex;align-items:center;gap:4px;">${editIco}Edit</button>` : '';
     return `
       <div class="tl-feed-item">
         <div class="tl-feed-line">
@@ -8912,7 +8915,10 @@ function openTimelinePane(fieldType) {
             <div class="tl-feed-title">${val}</div>
             <div class="tl-feed-date">${startDate} – ${endDate}</div>
           </div>
-          ${badge ? `<div class="tl-feed-badge">${badge}</div>` : ''}
+          <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+            ${badge ? `<div class="tl-feed-badge">${badge}</div>` : ''}
+            ${editBtn}
+          </div>
         </div>
       </div>`;
   }).join('');
@@ -9003,7 +9009,10 @@ const addTimelineCfg = {
   },
 };
 
+let _timelineEditMode = null;
+
 function openAddTimelineModal(fieldType) {
+  _timelineEditMode = null;
   closeTimelinePane();
   const cfg = addTimelineCfg[fieldType] || addTimelineCfg.classification;
   document.getElementById('addTimelineModalTitle').textContent = cfg.title;
@@ -9014,6 +9023,59 @@ function openAddTimelineModal(fieldType) {
   document.getElementById('addTimelineDateInput').value = '';
   const endEl = document.getElementById('addTimelineEndDateInput');
   if (endEl) endEl.value = '';
+  document.getElementById('addTimelineSubmitBtn').textContent = 'Add';
+  document.getElementById('addTimelineSubmitBtn').disabled = true;
+  document.getElementById('addTimelineModal').classList.add('open');
+}
+
+function openEditTimelineModal(fieldType, rowIndex) {
+  currentTimelineFieldType = fieldType;
+  closeTimelinePane();
+  const cfg = addTimelineCfg[fieldType] || addTimelineCfg.classification;
+  const d = timelineData[fieldType];
+  if (!d || !d.rows[rowIndex]) return;
+  const [val, startDate, endDate] = d.rows[rowIndex];
+  document.getElementById('addTimelineModalTitle').textContent = cfg.title.replace('Add', 'Edit');
+  document.getElementById('addTimelineFieldLabel').textContent = cfg.label;
+  const sel = document.getElementById('addTimelineSelect');
+  sel.innerHTML = `<option value="">Select an option</option>` +
+    cfg.options.map(o => `<option${o === val ? ' selected' : ''}>${o}</option>`).join('');
+  document.getElementById('addTimelineDateInput').value = startDate;
+  const endPretty = (endDate === 'Present' || endDate === '—') ? '' : endDate;
+  document.getElementById('addTimelineEndDateInput').value = endPretty;
+  _timelineEditMode = {
+    rowIndex,
+    originalVal: val,
+    originalStart: startDate,
+    originalEnd: endPretty
+  };
+  document.getElementById('addTimelineSubmitBtn').textContent = 'Save';
+  document.getElementById('addTimelineSubmitBtn').disabled = true;
+  document.getElementById('addTimelineModal').classList.add('open');
+}
+
+function openEditTimelineModal(fieldType, rowIndex) {
+  currentTimelineFieldType = fieldType;
+  closeTimelinePane();
+  const cfg = addTimelineCfg[fieldType] || addTimelineCfg.classification;
+  const d = timelineData[fieldType];
+  if (!d || !d.rows[rowIndex]) return;
+  const [val, startDate, endDate] = d.rows[rowIndex];
+  document.getElementById('addTimelineModalTitle').textContent = cfg.title.replace(/^Add\b/, 'Edit');
+  document.getElementById('addTimelineFieldLabel').textContent = cfg.label;
+  const sel = document.getElementById('addTimelineSelect');
+  sel.innerHTML = `<option value="">Select an option</option>` +
+    cfg.options.map(o => `<option${o === val ? ' selected' : ''}>${o}</option>`).join('');
+  document.getElementById('addTimelineDateInput').value = startDate;
+  const endPretty = (endDate === 'Present' || endDate === '—') ? '' : endDate;
+  document.getElementById('addTimelineEndDateInput').value = endPretty;
+  _timelineEditMode = {
+    rowIndex,
+    originalVal: val,
+    originalStart: startDate,
+    originalEnd: endPretty
+  };
+  document.getElementById('addTimelineSubmitBtn').textContent = 'Save';
   document.getElementById('addTimelineSubmitBtn').disabled = true;
   document.getElementById('addTimelineModal').classList.add('open');
 }
@@ -9200,22 +9262,46 @@ function exitTorEditMode() {
 function updateAddTimelineBtn() {
   const sel = document.getElementById('addTimelineSelect').value;
   const date = document.getElementById('addTimelineDateInput').value;
-  document.getElementById('addTimelineSubmitBtn').disabled = !(sel && date);
+  const endDate = document.getElementById('addTimelineEndDateInput').value;
+  const btn = document.getElementById('addTimelineSubmitBtn');
+  if (_timelineEditMode) {
+    const changed = sel !== _timelineEditMode.originalVal
+                 || date !== _timelineEditMode.originalStart
+                 || endDate !== _timelineEditMode.originalEnd;
+    btn.disabled = !(sel && date && changed);
+  } else {
+    btn.disabled = !(sel && date);
+  }
 }
 
 function submitAddTimeline() {
   const val = document.getElementById('addTimelineSelect').value;
-  const rawDate = document.getElementById('addTimelineDateInput').value;
-  const effectiveDate = new Date(rawDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const rawStart = document.getElementById('addTimelineDateInput').value;
+  const rawEnd = document.getElementById('addTimelineEndDateInput').value;
+  const fmt = s => {
+    if (!s) return '';
+    const dt = new Date(s);
+    if (isNaN(dt.getTime())) return s;
+    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+  const startDate = fmt(rawStart);
+  const endDate = rawEnd ? fmt(rawEnd) : 'Present';
   const d = timelineData[currentTimelineFieldType];
   if (d) {
-    const statusOrder = { upcoming: 0, active: 1, past: 2 };
-    d.rows.unshift([val, effectiveDate, '—', 'upcoming']);
-    d.rows.sort((a, b) => (statusOrder[a[a.length - 1]] ?? 3) - (statusOrder[b[b.length - 1]] ?? 3));
+    if (_timelineEditMode) {
+      const idx = _timelineEditMode.rowIndex;
+      const status = d.rows[idx][3];
+      d.rows[idx] = [val, startDate, endDate, status];
+    } else {
+      const statusOrder = { upcoming: 0, active: 1, past: 2 };
+      d.rows.unshift([val, startDate, endDate, 'upcoming']);
+      d.rows.sort((a, b) => (statusOrder[a[a.length - 1]] ?? 3) - (statusOrder[b[b.length - 1]] ?? 3));
+    }
   }
+  const wasEdit = !!_timelineEditMode;
   closeAddTimelineModal();
   openTimelinePane(currentTimelineFieldType);
-  toast('New entry added');
+  toast(wasEdit ? 'Entry updated' : 'New entry added');
 }
 
 function switchPayTab(btn, tabId) {

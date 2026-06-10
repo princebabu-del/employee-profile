@@ -210,7 +210,7 @@ A vertical timeline of events (Activity Log, Manager History, etc.). Use this ex
 ```
 
 **Locked specs:**
-- **Primary text:** 16px / 500 weight (medium) / `var(--800–900)`
+- **Primary text:** 14px / 600 weight (semibold) / `var(--800–900)`
 - **Secondary text:** 14px / 400 weight (regular) / `var(--500)`
 - **Primary → secondary gap:** `4px` (gap on parent container, no margin-top on secondary)
 - **Dot → content gap:** `12px`
