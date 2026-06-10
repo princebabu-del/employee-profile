@@ -7599,7 +7599,7 @@ function renderAddPersonList() {
         <div class="ov-manager-avatar" style="width:32px;height:32px;">${initials}</div>
         <div class="person-picker-info">
           <div class="person-picker-name">${u.name}</div>
-          <div class="person-picker-meta">#${u.code} · ${mgrText} · ${u.reportees} Reportees</div>
+          <div class="person-picker-meta">${(function(){ const parts = [`#${u.code}`, mgrText]; if (u.reportees > 0) parts.push(`${u.reportees} Reportees`); return parts.join(' · '); })()}</div>
         </div>
       </div>`;
   }).join('');
@@ -8809,12 +8809,14 @@ function buildPersonCardHTML(p) {
   const mgrCount = p.managers != null ? p.managers : 1;
   const rptCount = p.reportees != null ? p.reportees : 0;
   const mgrText  = (mgrCount === 1 && p.managedBy) ? `Managed by ${p.managedBy}` : `${mgrCount} Manager${mgrCount === 1 ? '' : 's'}`;
+  const metaParts = [`#${p.code}`, mgrText];
+  if (rptCount > 0) metaParts.push(`${rptCount} Reportees`);
   return `
     <div class="ov-manager-cell">
       <div class="ov-manager-avatar">${initials}</div>
       <div class="ov-manager-info">
         <span class="ov-manager-name">${p.name}</span>
-        <span class="ov-manager-role">#${p.code} · ${mgrText} · ${rptCount} Reportees</span>
+        <span class="ov-manager-role">${metaParts.join(' · ')}</span>
       </div>
       <button class="person-cell-remove" onclick="removePersonAssignment(this, '${p.name}')" type="button" title="Remove">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M14 6L6 14M6 6l8 8" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -9340,6 +9342,14 @@ function buildPayOverview() {
   </tr>`).join('');
 
   return `
+  <div class="pr-toggle-inline" style="margin-bottom: 24px;">
+    <label class="pay-sw"><input type="checkbox" checked><span class="pay-sw-track"></span></label>
+    <div>
+      <div class="pay-toggle-label">Payroll Active</div>
+      <div class="pay-toggle-desc">Employee is included in payroll runs and will receive paychecks</div>
+    </div>
+  </div>
+
   <div class="pay-ov-grid">
 
   <div class="pov-toolbar">
