@@ -4402,6 +4402,8 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
   justify-content: center;
 }
 .cred-icon svg { width: 28px; height: 28px; }
+.cred-icon--gray { filter: grayscale(1); }
+.cred-icon--gray img { opacity: 0.6; }
 .cred-meta {
   flex: 1;
   min-width: 0;
@@ -5511,7 +5513,7 @@ select.cred-drawer-input option { color: var(--900); }
 .ov-manager-avatar {
   width: 32px; height: 32px;
   border-radius: 6px;
-  background: linear-gradient(135deg, #2d4a35 0%, #1a3022 100%);
+  background: #2F5C3D;
   display: flex; align-items: center; justify-content: center;
   color: var(--white);
   font-size: 13px;
@@ -5668,7 +5670,6 @@ select.cred-drawer-input option { color: var(--900); }
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-top: 5px;
 }
 .field-helper-row--right { justify-content: flex-end; gap: 10px; }
 .field-helper-text {
@@ -6493,6 +6494,41 @@ select.cred-drawer-input option { color: var(--900); }
     <div class="companies-modal-list" id="companiesModalList"></div>
     <div class="companies-modal-ftr">
       <button class="btn-outline-blue" onclick="onManageCompanies()">Manage Companies</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Add Person Modal (Add Manager / Add Direct Report) ── -->
+<div class="modal-overlay" id="addPersonModal" onclick="closeAddPersonModalOnOverlay(event)">
+  <div class="modal companies-modal">
+    <div class="companies-modal-hd">
+      <div class="companies-modal-hd-text">
+        <div class="companies-modal-title" id="addPersonModalTitle">Add Manager</div>
+      </div>
+      <button class="modal-close" onclick="closeAddPersonModal()" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M14 4L4 14M4 4l10 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div style="padding: 0 24px 16px; display:flex; flex-direction:column; gap:16px;">
+      <div class="field" style="gap:8px;position:relative;">
+        <label>Select User</label>
+        <div class="cred-template-trigger" id="addPersonTrigger" onclick="toggleAddPersonDropdown()">
+          <span class="cred-template-placeholder" id="addPersonTriggerLabel">Select</span>
+          <svg style="flex-shrink:0;margin-left:auto;color:var(--500);" width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="cred-picker-dropdown" id="addPersonDropdown">
+          <div class="cred-picker-search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M16 16l4 4"/></svg>
+            <input class="cred-picker-search" id="addPersonSearch" placeholder="Search" oninput="filterAddPersonList(this.value)" />
+          </div>
+          <div class="cred-picker-list" id="addPersonList"></div>
+        </div>
+      </div>
+      <div id="addPersonSelected" style="display:none;"></div>
+    </div>
+    <div class="companies-modal-ftr" style="justify-content:flex-end;gap:12px;padding:16px 24px;border-top:1px solid var(--150);">
+      <button class="btn" onclick="closeAddPersonModal()">Cancel</button>
+      <button class="btn btn-primary" id="addPersonSubmit" disabled onclick="confirmAddPerson()">Add</button>
     </div>
   </div>
 </div>
@@ -7430,6 +7466,136 @@ function closeCompaniesModal() {
 function closeCompaniesModalOnOverlay(e) {
   if (e.target === document.getElementById('companiesModal')) closeCompaniesModal();
 }
+
+// ── Add Person Modal (Add Manager / Add Direct Report) ─────────────────────
+const ADD_PERSON_USERS = [
+  { name: 'Linda Marsh',     code: '100034', managers: 1, reportees: 4, managedBy: 'Greg Fast' },
+  { name: 'Ethan Johnson',   code: '100045', managers: 1, reportees: 2, managedBy: 'Linda Marsh' },
+  { name: 'Priya Kapoor',    code: '100061', managers: 2, reportees: 0 },
+  { name: 'Diego Alvarez',   code: '100072', managers: 1, reportees: 6, managedBy: 'Linda Marsh' },
+  { name: 'Hannah Brooks',   code: '100088', managers: 1, reportees: 3, managedBy: 'Greg Fast' },
+  { name: 'Noah Patel',      code: '100099', managers: 1, reportees: 0, managedBy: 'Linda Marsh' },
+  { name: 'Olivia Tan',      code: '100110', managers: 1, reportees: 1, managedBy: 'Linda Marsh' },
+];
+
+let _addPersonType = 'manager';     // 'manager' | 'report'
+let _addPersonSelected = null;       // selected user object
+let _addPersonFilter = '';
+
+function openAddPersonModal(type) {
+  _addPersonType = type;
+  _addPersonSelected = null;
+  _addPersonFilter = '';
+  document.getElementById('addPersonModalTitle').textContent =
+    type === 'manager' ? 'Add Manager' : 'Add Direct Report';
+  document.getElementById('addPersonTriggerLabel').textContent = 'Select';
+  document.getElementById('addPersonTriggerLabel').classList.add('cred-template-placeholder');
+  document.getElementById('addPersonSelected').style.display = 'none';
+  document.getElementById('addPersonSelected').innerHTML = '';
+  document.getElementById('addPersonSearch').value = '';
+  document.getElementById('addPersonSubmit').disabled = true;
+  renderAddPersonList();
+  // Open dropdown by default
+  document.getElementById('addPersonDropdown').classList.add('open');
+  document.getElementById('addPersonTrigger').classList.add('open');
+  document.getElementById('addPersonModal').classList.add('open');
+}
+function closeAddPersonModal() {
+  document.getElementById('addPersonModal').classList.remove('open');
+  document.getElementById('addPersonDropdown').classList.remove('open');
+  document.getElementById('addPersonTrigger').classList.remove('open');
+}
+function closeAddPersonModalOnOverlay(e) {
+  if (e.target === document.getElementById('addPersonModal')) closeAddPersonModal();
+}
+function toggleAddPersonDropdown() {
+  const dd = document.getElementById('addPersonDropdown');
+  const tr = document.getElementById('addPersonTrigger');
+  const isOpen = dd.classList.toggle('open');
+  tr.classList.toggle('open', isOpen);
+}
+function filterAddPersonList(val) {
+  _addPersonFilter = (val || '').toLowerCase();
+  renderAddPersonList();
+}
+function renderAddPersonList() {
+  const list = document.getElementById('addPersonList');
+  const f = _addPersonFilter;
+  const rows = ADD_PERSON_USERS.filter(u =>
+    !f || u.name.toLowerCase().includes(f) || u.code.includes(f)
+  );
+  if (!rows.length) {
+    list.innerHTML = `<div style="padding:24px;text-align:center;color:var(--500);font-size:14px;">No users found</div>`;
+    return;
+  }
+  list.innerHTML = rows.map((u, i) => {
+    const initials = u.name.split(' ').map(w => w[0]).join('').toUpperCase();
+    const mgrText  = (u.managers === 1 && u.managedBy) ? `Managed by ${u.managedBy}` : `${u.managers} Manager`;
+    const idx = ADD_PERSON_USERS.indexOf(u);
+    return `
+      <div class="cred-picker-row" onclick="selectAddPersonUser(${idx})" style="cursor:pointer;">
+        <div class="ov-manager-avatar" style="width:32px;height:32px;">${initials}</div>
+        <div class="cred-picker-info">
+          <div class="cred-picker-name">${u.name}</div>
+          <div class="cred-picker-meta">#${u.code} · ${mgrText} · ${u.reportees} Reportees</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+function selectAddPersonUser(idx) {
+  const u = ADD_PERSON_USERS[idx];
+  if (!u) return;
+  _addPersonSelected = u;
+  // Update trigger label
+  const trLabel = document.getElementById('addPersonTriggerLabel');
+  trLabel.textContent = u.name;
+  trLabel.classList.remove('cred-template-placeholder');
+  trLabel.style.cssText = 'font-size:16px;font-weight:500;color:var(--900);';
+  // Close dropdown
+  document.getElementById('addPersonDropdown').classList.remove('open');
+  document.getElementById('addPersonTrigger').classList.remove('open');
+  // Show selected card below
+  const sel = document.getElementById('addPersonSelected');
+  sel.style.display = 'block';
+  sel.innerHTML = buildPersonCardHTML({
+    name: u.name, code: u.code, managers: u.managers, reportees: u.reportees, managedBy: u.managedBy
+  }).replace(`removePersonAssignment(this, '${u.name}')`, `clearAddPersonSelection()`);
+  // Enable Add button
+  document.getElementById('addPersonSubmit').disabled = false;
+}
+function clearAddPersonSelection() {
+  _addPersonSelected = null;
+  document.getElementById('addPersonSelected').style.display = 'none';
+  document.getElementById('addPersonSelected').innerHTML = '';
+  const trLabel = document.getElementById('addPersonTriggerLabel');
+  trLabel.textContent = 'Select';
+  trLabel.style.cssText = '';
+  trLabel.classList.add('cred-template-placeholder');
+  document.getElementById('addPersonSubmit').disabled = true;
+}
+function confirmAddPerson() {
+  if (!_addPersonSelected) return;
+  const u = _addPersonSelected;
+  if (_addPersonType === 'manager') {
+    // Add to MANAGER_HISTORY as active
+    MANAGER_HISTORY.unshift({
+      name: u.name, code: u.code, reportees: u.reportees,
+      start: 'Jun 5, 2026', end: null, status: 'active', changedBy: 'You'
+    });
+    toast(`${u.name} added as Manager`);
+  } else {
+    DIRECT_REPORTS.push({
+      name: u.name, code: u.code, managers: u.managers, reportees: u.reportees, managedBy: u.managedBy
+    });
+    toast(`${u.name} added as Direct Report`);
+  }
+  closeAddPersonModal();
+  // Re-render Job tab if currently visible
+  const body = document.getElementById('drawerSectionBody');
+  if (body && body.innerHTML.includes('Manager &amp; Reports')) {
+    body.innerHTML = buildJobSectionHTML();
+  }
+}
 function renderCompaniesModalList() {
   const list = document.getElementById('companiesModalList');
   const checkSvg = `<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -8002,7 +8168,7 @@ function buildOverviewSectionHTML() {
               <div class="ov-manager-avatar">${mgrInitials}</div>
               <div class="ov-manager-info">
                 <span class="ov-manager-name">${mgr}</span>
-                <span class="ov-manager-role"># 100034 · 1 Manager · 4 reportees</span>
+                <span class="ov-manager-role">#100034 · Managed by Linda Marsh · 4 Reportees</span>
               </div>
             </div>` : ovAddBtn('job','Employment')}
           </div>
@@ -8124,7 +8290,7 @@ function buildJobSectionHTML() {
         <label>Job Classification <span class="field-required">*</span></label>
         <div class="tl-field-readonly">
           <span class="tl-field-val">CM-JM</span>
-          <span class="tl-field-effective">Eff. Mar 5, 2025</span>
+          <span class="tl-field-effective">Mar 5, 2025 – Present</span>
         </div>
         <div class="field-helper-row">
           <button class="btn-link" id="tl-view-btn-classification" onclick="openTimelinePane('classification')" type="button">View Timeline</button>
@@ -8134,7 +8300,7 @@ function buildJobSectionHTML() {
         <label>Job Level <span class="field-required">*</span></label>
         <div class="tl-field-readonly">
           <span class="tl-field-val">Journeyman</span>
-          <span class="tl-field-effective">Eff. Mar 5, 2025</span>
+          <span class="tl-field-effective">Mar 5, 2025 – Present</span>
         </div>
         <div class="field-helper-row">
           <button class="btn-link" id="tl-view-btn-level" onclick="openTimelinePane('level')" type="button">View Timeline</button>
@@ -8256,7 +8422,7 @@ function buildJobSectionHTML() {
         <label>Union</label>
         <div class="tl-field-readonly">
           <span class="tl-field-val">Cement Masons</span>
-          <span class="tl-field-effective">Eff. Jun 1, 2024</span>
+          <span class="tl-field-effective">Jun 1, 2024 – Present</span>
         </div>
         <div class="field-helper-row">
           <button class="btn-link" id="tl-view-btn-union" onclick="openTimelinePane('union')" type="button">View Timeline</button>
@@ -8287,10 +8453,10 @@ function buildJobSectionHTML() {
         <div style="display:flex;flex-direction:column;gap:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
             <span style="font-size:16px;font-weight:600;color:var(--900);">Manager</span>
-            <button class="btn-link" onclick="toast('Add Manager')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
+            <button class="btn-link" onclick="openAddPersonModal('manager')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
           </div>
           <div style="height:1px;background:var(--150);"></div>
-          ${MANAGER_HISTORY.filter(m => m.status === 'active').map(m => buildPersonCardHTML({ name: m.name, code: m.code, managers: 1, reportees: m.reportees })).join('')}
+          ${MANAGER_HISTORY.filter(m => m.status === 'active').map(m => buildPersonCardHTML({ name: m.name, code: m.code, managers: 1, reportees: m.reportees, managedBy: 'Linda Marsh' })).join('')}
           <button class="btn-link" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button" style="align-self:flex-start;">View Manager History</button>
         </div>
       </div>
@@ -8298,7 +8464,7 @@ function buildJobSectionHTML() {
         <div style="display:flex;flex-direction:column;gap:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
             <span style="font-size:16px;font-weight:600;color:var(--900);">Direct Reports</span>
-            <button class="btn-link" onclick="toast('Add Direct Report')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Direct Report</button>
+            <button class="btn-link" onclick="openAddPersonModal('report')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Direct Report</button>
           </div>
           <div style="height:1px;background:var(--150);"></div>
           ${DIRECT_REPORTS.map(buildPersonCardHTML).join('')}
@@ -8314,7 +8480,7 @@ function buildJobSectionHTML() {
 function buildJobManagerReportsHTML() {
   const plusIco = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
   const activeManagers = MANAGER_HISTORY.filter(m => m.status === 'active').map(m => ({
-    name: m.name, code: m.code, managers: 1, reportees: m.reportees
+    name: m.name, code: m.code, managers: 1, reportees: m.reportees, managedBy: 'Linda Marsh'
   }));
   const mgrCards = activeManagers.map(buildPersonCardHTML).join('');
   const rptCards = DIRECT_REPORTS.map(buildPersonCardHTML).join('');
@@ -8326,7 +8492,7 @@ function buildJobManagerReportsHTML() {
         <div style="display:flex;flex-direction:column;gap:16px;">${mgrCards}</div>
       </div>
       <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
-        <button class="btn" onclick="toast('Add Manager')">${plusIco}Add Manager</button>
+        <button class="btn" onclick="openAddPersonModal('manager')">${plusIco}Add Manager</button>
         <button class="btn" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button" style="border:none;color:var(--blue);padding-left:0;padding-right:0;">View Manager History</button>
       </div>
     </div>
@@ -8336,7 +8502,7 @@ function buildJobManagerReportsHTML() {
         <div style="display:flex;flex-direction:column;gap:16px;">${rptCards}</div>
       </div>
       <div style="margin-top:16px;">
-        <button class="btn" onclick="toast('Add Reports')">${plusIco}Add Reports</button>
+        <button class="btn" onclick="openAddPersonModal('report')">${plusIco}Add Direct Report</button>
       </div>
     </div>
   </div>
@@ -8593,21 +8759,22 @@ const MANAGER_HISTORY = [
 ];
 
 const DIRECT_REPORTS = [
-  { name: 'Marcus Webb',   code: '100156', managers: 1, reportees: 0 },
+  { name: 'Marcus Webb',   code: '100156', managers: 1, reportees: 0, managedBy: 'Jack Lumberton' },
   { name: 'Sarah Chen',    code: '100189', managers: 2, reportees: 0 },
-  { name: 'Robert Torres', code: '100201', managers: 1, reportees: 2 },
+  { name: 'Robert Torres', code: '100201', managers: 1, reportees: 2, managedBy: 'Jack Lumberton' },
 ];
 
 function buildPersonCardHTML(p) {
   const initials = p.name.split(' ').map(w => w[0]).join('').toUpperCase();
   const mgrCount = p.managers != null ? p.managers : 1;
   const rptCount = p.reportees != null ? p.reportees : 0;
+  const mgrText  = (mgrCount === 1 && p.managedBy) ? `Managed by ${p.managedBy}` : `${mgrCount} Manager`;
   return `
     <div class="ov-manager-cell">
       <div class="ov-manager-avatar">${initials}</div>
       <div class="ov-manager-info">
         <span class="ov-manager-name">${p.name}</span>
-        <span class="ov-manager-role"># ${p.code} · ${mgrCount} Manager · ${rptCount} reportees</span>
+        <span class="ov-manager-role">#${p.code} · ${mgrText} · ${rptCount} Reportees</span>
       </div>
       <button class="person-cell-remove" onclick="removePersonAssignment(this, '${p.name}')" type="button" title="Remove">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M14 6L6 14M6 6l8 8" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -8639,7 +8806,7 @@ function openManagerHistoryPane() {
             <div class="ov-manager-avatar" style="flex-shrink:0;">${m.name.split(' ').map(w=>w[0]).join('').toUpperCase()}</div>
             <div style="min-width:0;display:flex;flex-direction:column;gap:2px;">
               <div class="tl-feed-title">${m.name}</div>
-              <div class="tl-feed-date"># ${m.code} · ${m.start}${m.end ? ' – ' + m.end : ' – Present'}</div>
+              <div class="tl-feed-date">#${m.code} · ${m.start}${m.end ? ' – ' + m.end : ' – Present'}</div>
               <div class="tl-feed-date">Changed by ${m.changedBy}</div>
             </div>
           </div>
@@ -13068,8 +13235,10 @@ function openCredDetailPane(idx) {
   const activeRow = document.querySelector(`.cred-table tbody tr[data-cred-idx="${idx}"]`);
   if (activeRow) activeRow.classList.add('active');
   const catIcon = CATEGORY_ICONS[c.category] || { bg: '#8597ab', svg: '' };
-  document.getElementById('credDetailHdIcon').style.background = catIcon.bg;
-  document.getElementById('credDetailHdIcon').innerHTML = catIcon.svg;
+  const hdIcon = document.getElementById('credDetailHdIcon');
+  hdIcon.style.background = catIcon.bg;
+  hdIcon.innerHTML = catIcon.svg;
+  hdIcon.classList.toggle('cred-icon--gray', c.status === 'Incomplete');
   document.getElementById('credDetailHdName').textContent = c.title;
   const kebabBtn = document.getElementById('credDetailHdKebab');
   kebabBtn.onclick = (e) => toggleCredDetailKebab(e, c.status);
@@ -13149,9 +13318,10 @@ function _renderCredDetailReadOnly(c) {
       <div class="ov-details-grid">
         ${row('Name', c.title)}
         ${row('Type', typeLabel)}
-        ${row('Status', credStatusBadge(c.status))}
         ${row('Sub-title', c.level !== 'N/A' ? c.level : null)}
         ${row('Issuing Entity', c.issuer)}
+        ${row('Status', credStatusBadge(c.status))}
+        ${c.status === 'Incomplete' ? row('Due Date', null) : ''}
         ${row('Issue Date', formatCredDate(c.issued))}
         ${row('Expiration Date', formatCredDate(c.expires))}
         ${row('Link', null)}
@@ -13591,7 +13761,7 @@ function renderCredCards(list) {
     return `
       <div class="cred-card" data-cred-idx="${idx}" onclick="openCredDetailPane(${idx})">
         <div class="cred-card-top">
-          <div class="cred-icon" style="background:${cat.bg}">${cat.svg}</div>
+          <div class="cred-icon${c.status === 'Incomplete' ? ' cred-icon--gray' : ''}" style="background:${cat.bg}">${cat.svg}</div>
           <div class="cred-meta">
             <div class="cred-issuer">
               ${c.issuer}
@@ -13708,7 +13878,7 @@ function renderCredTable(list) {
         const catIcon = CATEGORY_ICONS[c.category] || { bg: '#8597ab', svg: '' };
         return `<tr data-cred-idx="${idx}" class="${isChecked ? 'selected' : ''}" onclick="openCredDetailPane(${idx})">
           <td class="col-check" onclick="event.stopPropagation();toggleCredRow(${idx})"><div class="cb ${isChecked ? 'checked' : ''}">${checkSvg}</div></td>
-          <td class="cred-td-name"><div class="cred-td-name-inner"><div class="cred-icon" style="background:${catIcon.bg};flex-shrink:0;width:32px;height:32px;border-radius:8px;font-size:14px;">${catIcon.svg}</div><div class="cred-td-name-text"><span class="cred-table-name">${c.title}</span><span class="cred-table-subtitle">${typeLabel}</span></div></div></td>
+          <td class="cred-td-name"><div class="cred-td-name-inner"><div class="cred-icon${c.status === 'Incomplete' ? ' cred-icon--gray' : ''}" style="background:${catIcon.bg};flex-shrink:0;width:32px;height:32px;border-radius:8px;font-size:14px;">${catIcon.svg}</div><div class="cred-td-name-text"><span class="cred-table-name">${c.title}</span><span class="cred-table-subtitle">${typeLabel}</span></div></div></td>
           <td>${c.level && c.level !== 'N/A' ? c.level : dash}</td>
           <td class="cred-td-issuer">${c.issuer || dash}</td>
           <td class="cred-td-date">${formatCredDate(c.issued) || dash}</td>
