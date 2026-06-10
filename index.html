@@ -8262,7 +8262,7 @@ function buildOverviewSectionHTML() {
 function buildJobSectionHTML() {
   const r         = currentDrawerEmployee;
   const role      = r ? r.role       : 'Worker';
-  const code      = r ? (r.code || '') : '';
+  const code      = r ? (r.code || `EMP${String(r.id).padStart(4,'0')}`) : 'EMP0001';
   const hire      = r ? r.hire       : '12/04/2025';
   const start     = r ? r.start      : '12/04/2025';
   const title     = r ? r.title      : 'Worker';
