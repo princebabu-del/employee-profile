@@ -3723,6 +3723,25 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
 .cred-chip-overflow { display: inline-flex; align-items: center; justify-content: center; height: 24px; padding: 0 8px; background: var(--50); border: 1px solid var(--150); border-radius: 5px; font-size: 12px; font-weight: 600; color: var(--600); white-space: nowrap; }
 .cred-picker-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1px solid var(--150); border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); z-index: 300; display: none; flex-direction: column; max-height: 520px; overflow: hidden; }
 .cred-picker-dropdown.open { display: flex; }
+
+/* ── Person picker (Add Manager / Add Direct Report) ── */
+.person-select-trigger { display: flex; align-items: center; height: 44px; padding: 0 12px; border: 1px solid var(--gray-border); border-radius: 8px; cursor: pointer; background: var(--white); gap: 6px; user-select: none; overflow: hidden; }
+.person-select-trigger:hover { border-color: var(--blue); }
+.person-select-trigger.open { border-color: var(--blue); }
+.person-select-placeholder { font-size: 16px; font-weight: 500; color: var(--400); }
+.person-picker-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1px solid var(--150); border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); z-index: 300; display: none; flex-direction: column; max-height: 520px; overflow: hidden; }
+.person-picker-dropdown.open { display: flex; }
+.person-picker-search-wrap { position: relative; padding: 12px 16px; border-bottom: 1px solid var(--150); }
+.person-picker-search-wrap svg { position: absolute; left: 28px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; stroke: var(--400); pointer-events: none; }
+.person-picker-search { width: 100%; height: 44px; padding: 0 12px 0 44px; border: 1px solid var(--gray-border); border-radius: 8px; font-size: 16px; font-weight: 500; color: var(--900); outline: none; background: var(--white); font-family: inherit; }
+.person-picker-search::placeholder { color: var(--400); font-weight: 400; }
+.person-picker-list { flex: 1; overflow-y: auto; min-height: 340px; }
+.person-picker-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--150); cursor: pointer; transition: background 0.1s; }
+.person-picker-row:last-child { border-bottom: none; }
+.person-picker-row:hover { background: var(--50); }
+.person-picker-info { flex: 1; min-width: 0; }
+.person-picker-name { font-size: 14px; font-weight: 600; color: var(--900); }
+.person-picker-meta { font-size: 13px; font-weight: 400; color: var(--500); margin-top: 2px; }
 .to-btn-group {
   display: flex;
   border: 1px solid var(--gray-border);
@@ -5756,6 +5775,10 @@ select.cred-drawer-input option { color: var(--900); }
 #addTimelineSubmitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 #addTimelineModal { z-index: 500; }
 #addPersonModal { z-index: 500; }
+#addPersonModal .person-picker-dropdown { position: static; margin-top: 4px; max-height: 320px; box-shadow: none; border-color: var(--gray-border); }
+#addPersonModal .person-picker-list { min-height: 0; }
+#addPersonModal .modal { overflow: visible; }
+#addPersonModal .modal-body { overflow: visible; }
 .modal-title--lg { font-size: 20px; font-weight: 600; line-height: 32px; color: var(--900); }
 
 /* ── Timeline Feed ── */
@@ -6511,16 +6534,16 @@ select.cred-drawer-input option { color: var(--900); }
     <div class="modal-body">
       <div class="field" style="gap:8px;position:relative;">
         <label id="addPersonFieldLabel">Manager</label>
-        <div class="cred-template-trigger" id="addPersonTrigger" onclick="toggleAddPersonDropdown()" style="height:44px;border-radius:8px;">
-          <span class="cred-template-placeholder" id="addPersonTriggerLabel">Select an option</span>
+        <div class="person-select-trigger" id="addPersonTrigger" onclick="toggleAddPersonDropdown()">
+          <span class="person-select-placeholder" id="addPersonTriggerLabel">Select an option</span>
           <svg style="flex-shrink:0;margin-left:auto;color:var(--500);" width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="cred-picker-dropdown" id="addPersonDropdown">
-          <div class="cred-picker-search-wrap">
+        <div class="person-picker-dropdown" id="addPersonDropdown">
+          <div class="person-picker-search-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M16 16l4 4"/></svg>
-            <input class="cred-picker-search" id="addPersonSearch" placeholder="Search" oninput="filterAddPersonList(this.value)" />
+            <input class="person-picker-search" id="addPersonSearch" placeholder="Search" oninput="filterAddPersonList(this.value)" />
           </div>
-          <div class="cred-picker-list" id="addPersonList"></div>
+          <div class="person-picker-list" id="addPersonList"></div>
         </div>
       </div>
       <div id="addPersonSelected" style="display:none;"></div>
@@ -7490,7 +7513,7 @@ function openAddPersonModal(type) {
   document.getElementById('addPersonFieldLabel').textContent =
     type === 'manager' ? 'Manager' : 'Direct Report';
   document.getElementById('addPersonTriggerLabel').textContent = 'Select an option';
-  document.getElementById('addPersonTriggerLabel').classList.add('cred-template-placeholder');
+  document.getElementById('addPersonTriggerLabel').classList.add('person-select-placeholder');
   document.getElementById('addPersonSelected').style.display = 'none';
   document.getElementById('addPersonSelected').innerHTML = '';
   document.getElementById('addPersonSearch').value = '';
@@ -7531,14 +7554,14 @@ function renderAddPersonList() {
   }
   list.innerHTML = rows.map((u, i) => {
     const initials = u.name.split(' ').map(w => w[0]).join('').toUpperCase();
-    const mgrText  = (u.managers === 1 && u.managedBy) ? `Managed by ${u.managedBy}` : `${u.managers} Manager`;
+    const mgrText  = (u.managers === 1 && u.managedBy) ? `Managed by ${u.managedBy}` : `${u.managers} Manager${u.managers === 1 ? '' : 's'}`;
     const idx = ADD_PERSON_USERS.indexOf(u);
     return `
-      <div class="cred-picker-row" onclick="selectAddPersonUser(${idx})" style="cursor:pointer;">
+      <div class="person-picker-row" onclick="selectAddPersonUser(${idx})">
         <div class="ov-manager-avatar" style="width:32px;height:32px;">${initials}</div>
-        <div class="cred-picker-info">
-          <div class="cred-picker-name">${u.name}</div>
-          <div class="cred-picker-meta">#${u.code} · ${mgrText} · ${u.reportees} Reportees</div>
+        <div class="person-picker-info">
+          <div class="person-picker-name">${u.name}</div>
+          <div class="person-picker-meta">#${u.code} · ${mgrText} · ${u.reportees} Reportees</div>
         </div>
       </div>`;
   }).join('');
@@ -7550,7 +7573,7 @@ function selectAddPersonUser(idx) {
   // Update trigger label
   const trLabel = document.getElementById('addPersonTriggerLabel');
   trLabel.textContent = u.name;
-  trLabel.classList.remove('cred-template-placeholder');
+  trLabel.classList.remove('person-select-placeholder');
   trLabel.style.cssText = 'font-size:16px;font-weight:500;color:var(--900);';
   // Close dropdown
   document.getElementById('addPersonDropdown').classList.remove('open');
@@ -7571,7 +7594,7 @@ function clearAddPersonSelection() {
   const trLabel = document.getElementById('addPersonTriggerLabel');
   trLabel.textContent = 'Select';
   trLabel.style.cssText = '';
-  trLabel.classList.add('cred-template-placeholder');
+  trLabel.classList.add('person-select-placeholder');
   document.getElementById('addPersonSubmit').disabled = true;
 }
 function confirmAddPerson() {
@@ -8769,7 +8792,7 @@ function buildPersonCardHTML(p) {
   const initials = p.name.split(' ').map(w => w[0]).join('').toUpperCase();
   const mgrCount = p.managers != null ? p.managers : 1;
   const rptCount = p.reportees != null ? p.reportees : 0;
-  const mgrText  = (mgrCount === 1 && p.managedBy) ? `Managed by ${p.managedBy}` : `${mgrCount} Manager`;
+  const mgrText  = (mgrCount === 1 && p.managedBy) ? `Managed by ${p.managedBy}` : `${mgrCount} Manager${mgrCount === 1 ? '' : 's'}`;
   return `
     <div class="ov-manager-cell">
       <div class="ov-manager-avatar">${initials}</div>
