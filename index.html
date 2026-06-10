@@ -8899,7 +8899,7 @@ function openTimelinePane(fieldType) {
     return '';
   };
   const items = d.rows.map(row => {
-    const [val, startDate, , status] = row;
+    const [val, startDate, endDate, status] = row;
     const badge = statusBadge(status);
     return `
       <div class="tl-feed-item">
@@ -8910,7 +8910,7 @@ function openTimelinePane(fieldType) {
         <div class="tl-feed-content">
           <div class="tl-feed-left">
             <div class="tl-feed-title">${val}</div>
-            <div class="tl-feed-date">${startDate}</div>
+            <div class="tl-feed-date">${startDate} – ${endDate}</div>
           </div>
           ${badge ? `<div class="tl-feed-badge">${badge}</div>` : ''}
         </div>
