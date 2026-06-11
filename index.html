@@ -5549,13 +5549,13 @@ select.cred-drawer-input option { color: var(--900); }
   min-width: 0;
 }
 .ov-manager-name {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
   color: var(--900);
   line-height: 1.3;
 }
 .ov-manager-role {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   color: var(--500);
   line-height: 1.3;
@@ -8391,14 +8391,9 @@ function buildJobSectionHTML() {
       </div>
       <div class="field">
         <label>Job Level</label>
-        <div class="tl-field-readonly">
-          <span class="tl-field-val">Journeyman</span>
-          <span class="tl-field-effective">03/05/2025 - 03/05/2028</span>
-        </div>
-        <div class="field-helper-row" style="justify-content:space-between;">
+        <label class="checkbox-field-label">
           <button class="btn-link btn-link--blue" onclick="openAddTimelineModal('level')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add</button>
-          <button class="btn-link btn-link--gray" id="tl-view-btn-level" onclick="openTimelinePane('level')" type="button">View Timeline</button>
-        </div>
+        </label>
       </div>
 
       <div class="field">
