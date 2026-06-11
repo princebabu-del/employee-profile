@@ -1597,7 +1597,7 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
 #timeOffRequestPane .pr-label-row { margin-bottom: 0; }
 #timeOffRequestPane .field { gap: 8px; }
 #timeOffRequestPane .form-row { gap: 20px; }
-.tl-field-readonly { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border: 1px solid var(--gray-border); border-radius: 8px; background: var(--50); min-height: 42px; }
+.tl-field-readonly { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border: 1px solid var(--gray-border); border-radius: 8px; background: var(--50); height: 44px; }
 .tl-field-val { font-size: 16px; font-weight: 500; color: var(--black); }
 .tl-field-effective { font-size: 14px; font-weight: 400; color: var(--500); }
 @keyframes field-highlight {
@@ -8906,7 +8906,7 @@ function buildPersonCardHTML(p) {
         <span class="ov-manager-role">${metaParts.join(' · ')}</span>
       </div>
       <button class="person-cell-remove" onclick="${removeHandler}" type="button" title="Remove">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M14 6L6 14M6 6l8 8" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M18 2L2 18M2 2l16 16" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>`;
 }
