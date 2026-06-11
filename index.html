@@ -1302,7 +1302,7 @@ tbody td.col-check { padding-left: 16px; padding-right: 8px; }
   padding: 0 12px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--800);
   letter-spacing: 0.08px;
@@ -1598,8 +1598,8 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
 #timeOffRequestPane .field { gap: 8px; }
 #timeOffRequestPane .form-row { gap: 20px; }
 .tl-field-readonly { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border: 1px solid var(--gray-border); border-radius: 8px; background: var(--50); min-height: 42px; }
-.tl-field-val { font-size: 14px; color: var(--black); }
-.tl-field-effective { font-size: 12px; color: var(--400); }
+.tl-field-val { font-size: 16px; font-weight: 500; color: var(--black); }
+.tl-field-effective { font-size: 14px; font-weight: 400; color: var(--500); }
 @keyframes field-highlight {
   0%   { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(41,112,255,0.22); }
   60%  { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(41,112,255,0.22); }
@@ -5700,7 +5700,7 @@ select.cred-drawer-input option { color: var(--900); }
   font-size: 14px;
   font-weight: 600;
   font-family: inherit;
-  color: var(--700);
+  color: var(--blue);
   background: none;
   border: none;
   cursor: pointer;
@@ -5711,6 +5711,9 @@ select.cred-drawer-input option { color: var(--900); }
 .btn-link:hover svg { text-decoration: none; }
 .btn-link:disabled,
 .btn-link[disabled] { color: #D1E0FF; cursor: not-allowed; opacity: 1; }
+.btn-link-secondary { color: var(--700); }
+.btn-link-secondary:disabled,
+.btn-link-secondary[disabled] { color: var(--300); }
 
 /* ── Timeline Modal ── */
 #timelineModal { z-index: 400; }
@@ -5776,6 +5779,7 @@ select.cred-drawer-input option { color: var(--900); }
 .add-tl-cal-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--400); pointer-events: none; }
 #addTimelineSubmitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 #addTimelineModal { z-index: 500; }
+#addTimelineModal .modal-body { gap: 20px; }
 #addPersonModal { z-index: 500; }
 #addPersonModal .person-picker-dropdown { position: static; margin-top: -4px; max-height: 320px; box-shadow: none; border-color: var(--gray-border); }
 #addPersonModal .person-picker-list { min-height: 0; }
@@ -5810,6 +5814,8 @@ select.cred-drawer-input option { color: var(--900); }
 .btn-link--inactive { color: var(--300); cursor: default; pointer-events: none; }
 .btn-link--gray { color: var(--700); }
 .btn-link--gray:hover { color: var(--700); }
+.btn-link--blue { color: var(--blue); }
+.btn-link--blue:hover { color: var(--blue); }
 
 /* ── Timeline Pane (inside drawer) ── */
 .side-drawer {
@@ -6448,7 +6454,7 @@ select.cred-drawer-input option { color: var(--900); }
           <option value="">Select an option</option>
         </select></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
         <div class="field" style="gap:8px;">
           <label>Start Date</label>
           <div class="date-input"><input class="field-input" id="addTimelineDateInput" oninput="updateAddTimelineBtn()" placeholder="MM/DD/YYYY" /></div>
@@ -6732,7 +6738,7 @@ select.cred-drawer-input option { color: var(--900); }
           <div class="field"><label>Last Name <span class="field-required">*</span></label><input class="field-input" id="p-last" value="Lumberton" /></div>
           <div class="field"><label>Preferred Name</label><input class="field-input" id="p-pref" value="Dave" /></div>
           <div class="field"><label>Gender</label><div class="select-wrapper"><select class="field-input"><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option></select></div></div>
-          <div class="field"><label>Date of Birth</label><div class="date-input"><input class="field-input" id="p-dob" value="12/04/1989" placeholder="MM/DD/YYYY" /></div></div>
+          <div class="field"><label>Date of Birth <span class="field-required">*</span></label><div class="date-input"><input class="field-input" id="p-dob" value="12/04/1989" placeholder="MM/DD/YYYY" /></div></div>
           <div class="field"><label>Birth Place</label><input class="field-input" placeholder="Enter" /></div>
           <div class="field"><label>Language</label><div class="select-wrapper"><select class="field-input"><option value="">Select</option><option>English</option><option>Spanish</option><option>French</option></select></div></div>
           <div class="field"><label>Marital Status</label><div class="select-wrapper"><select class="field-input"><option value="">Select</option><option>Single</option><option>Married</option><option>Divorced</option></select></div></div>
@@ -6788,7 +6794,7 @@ select.cred-drawer-input option { color: var(--900); }
           </div>
           <div class="tax-jur-value">
             <span>Norwich, VT</span>
-            <button class="btn-link" onclick="toast('Showing applicable taxes')">View Applicable Taxes</button>
+            <button class="btn-link" onclick="toast('Showing applicable taxes')" type="button">View Applicable Taxes</button>
           </div>
         </div>
         <div class="checkbox-row" onclick="toggleMailingSame(this)">
@@ -8297,6 +8303,10 @@ function buildJobSectionHTML() {
     <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Employment</span></div></div>
     <div class="field-grid">
       <div class="field">
+        <label>Job Title <span class="field-required">*</span></label>
+        <input class="field-input" id="j-title" value="${title}" />
+      </div>
+      <div class="field">
         <label>Employee Code</label>
         <input class="field-input" id="j-code" value="${code}" placeholder="Enter" />
       </div>
@@ -8323,19 +8333,14 @@ function buildJobSectionHTML() {
         <label>Effective Tenure Date <span class="field-required">*</span></label>
         <div class="date-input"><input class="field-input" value="" placeholder="MM/DD/YYYY" /></div>
       </div>
-
-      <div class="field">
-        <label>Job Title <span class="field-required">*</span></label>
-        <input class="field-input" id="j-title" value="${title}" />
-      </div>
       <div class="field">
         <label>Job Classification</label>
         <div class="tl-field-readonly">
           <span class="tl-field-val">CM-JM</span>
-          <span class="tl-field-effective">Mar 5, 2025 – Mar 5, 2027</span>
+          <span class="tl-field-effective">03/05/2025 - 03/05/2027</span>
         </div>
         <div class="field-helper-row" style="justify-content:space-between;">
-          <button class="btn-link btn-link--gray" onclick="openAddTimelineModal('classification')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add</button>
+          <button class="btn-link btn-link--blue" onclick="openAddTimelineModal('classification')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add</button>
           <button class="btn-link btn-link--gray" id="tl-view-btn-classification" onclick="openTimelinePane('classification')" type="button">View Timeline</button>
         </div>
       </div>
@@ -8343,10 +8348,10 @@ function buildJobSectionHTML() {
         <label>Job Level</label>
         <div class="tl-field-readonly">
           <span class="tl-field-val">Journeyman</span>
-          <span class="tl-field-effective">Mar 5, 2025 – Mar 5, 2028</span>
+          <span class="tl-field-effective">03/05/2025 - 03/05/2028</span>
         </div>
         <div class="field-helper-row" style="justify-content:space-between;">
-          <button class="btn-link btn-link--gray" onclick="openAddTimelineModal('level')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add</button>
+          <button class="btn-link btn-link--blue" onclick="openAddTimelineModal('level')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add</button>
           <button class="btn-link btn-link--gray" id="tl-view-btn-level" onclick="openTimelinePane('level')" type="button">View Timeline</button>
         </div>
       </div>
@@ -8377,6 +8382,20 @@ function buildJobSectionHTML() {
           <option value="">Select</option>
           <option>Skilled</option>
           <option>Trained</option>
+        </select></div>
+      </div>
+      <div class="field">
+        <label>Trades</label>
+        <div class="select-wrapper"><select class="field-input">
+          <option value="">Select</option>
+          <option>Carpentry</option>
+          <option>Electrical</option>
+          <option>Plumbing</option>
+          <option>Masonry</option>
+          <option>HVAC</option>
+          <option>Roofing</option>
+          <option>Painting</option>
+          <option>Welding</option>
         </select></div>
       </div>
     </div>
@@ -8481,10 +8500,10 @@ function buildJobSectionHTML() {
         <label>Union</label>
         <div class="tl-field-readonly">
           <span class="tl-field-val">Cement Masons</span>
-          <span class="tl-field-effective">Jun 1, 2024 – Jun 1, 2027</span>
+          <span class="tl-field-effective">06/01/2024 - 06/01/2027</span>
         </div>
         <div class="field-helper-row" style="justify-content:space-between;">
-          <button class="btn-link btn-link--gray" onclick="openAddTimelineModal('union')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add</button>
+          <button class="btn-link btn-link--blue" onclick="openAddTimelineModal('union')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add</button>
           <button class="btn-link btn-link--gray" id="tl-view-btn-union" onclick="openTimelinePane('union')" type="button">View Timeline</button>
         </div>
       </div>
@@ -8513,7 +8532,7 @@ function buildJobSectionHTML() {
         <div style="display:flex;flex-direction:column;gap:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
             <span style="font-size:16px;font-weight:600;color:var(--900);">Manager</span>
-            <button class="btn-link btn-link--gray" onclick="openAddPersonModal('manager')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
+            <button class="btn-link btn-link--blue" onclick="openAddPersonModal('manager')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
           </div>
           <div style="height:1px;background:var(--150);"></div>
           ${MANAGER_HISTORY.filter(m => m.status === 'active').map(m => buildPersonCardHTML({ name: m.name, code: m.code, managers: 1, reportees: m.reportees, managedBy: 'Linda Marsh' })).join('')}
@@ -8524,7 +8543,7 @@ function buildJobSectionHTML() {
         <div style="display:flex;flex-direction:column;gap:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
             <span style="font-size:16px;font-weight:600;color:var(--900);">Direct Reports</span>
-            <button class="btn-link btn-link--gray" onclick="openAddPersonModal('report')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Direct Report</button>
+            <button class="btn-link btn-link--blue" onclick="openAddPersonModal('report')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Direct Report</button>
           </div>
           <div style="height:1px;background:var(--150);"></div>
           ${DIRECT_REPORTS.map(buildPersonCardHTML).join('')}
@@ -11926,7 +11945,7 @@ function buildProfileSectionHTML() {
       <div class="field"><label>Last Name <span class="field-required">*</span></label><input class="field-input" id="p-last" value="${last}" /></div>
       <div class="field"><label>Preferred Name</label><input class="field-input" id="p-pref" value="" /></div>
       <div class="field"><label>Gender</label><div class="select-wrapper"><select class="field-input"><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option></select></div></div>
-      <div class="field"><label>Date of Birth</label><div class="date-input"><input class="field-input" id="p-dob" value="" placeholder="MM/DD/YYYY" /></div></div>
+      <div class="field"><label>Date of Birth <span class="field-required">*</span></label><div class="date-input"><input class="field-input" id="p-dob" value="" placeholder="MM/DD/YYYY" /></div></div>
       <div class="field"><label>Birth Place</label><input class="field-input" placeholder="Enter" /></div>
       <div class="field"><label>Language</label><div class="select-wrapper"><select class="field-input"><option value="">Select</option><option>English</option><option>Spanish</option><option>French</option></select></div></div>
       <div class="field"><label>Marital Status</label><div class="select-wrapper"><select class="field-input"><option value="">Select</option><option>Single</option><option>Married</option><option>Divorced</option></select></div></div>
@@ -11993,7 +12012,7 @@ function buildProfileSectionHTML() {
       </div>
       <div class="tax-jur-value">
         <span>${taxJur}</span>
-        <button class="btn-link" onclick="openTaxesPane()">View Applicable Taxes</button>
+        <button class="btn-link" onclick="openTaxesPane()" type="button">View Applicable Taxes</button>
       </div>
     </div>
     <div class="checkbox-row" onclick="toggleMailingSame(this)">

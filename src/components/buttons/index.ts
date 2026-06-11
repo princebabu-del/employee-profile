@@ -7,5 +7,8 @@ export type { SecondaryBlueButtonProps } from './SecondaryBlueButton';
 export { SecondaryGrayButton } from './SecondaryGrayButton';
 export type { SecondaryGrayButtonProps } from './SecondaryGrayButton';
 
-export { LinkButton } from './LinkButton';
-export type { LinkButtonProps } from './LinkButton';
+export { PrimaryLinkButton } from './PrimaryLinkButton';
+export type { PrimaryLinkButtonProps } from './PrimaryLinkButton';
+
+export { SecondaryLinkButton } from './SecondaryLinkButton';
+export type { SecondaryLinkButtonProps } from './SecondaryLinkButton';

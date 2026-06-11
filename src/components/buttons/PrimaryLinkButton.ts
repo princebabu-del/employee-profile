@@ -1,4 +1,4 @@
-export interface LinkButtonProps {
+export interface PrimaryLinkButtonProps {
   label: string;
   onclick: string;
   id?: string;
@@ -9,13 +9,14 @@ export interface LinkButtonProps {
 }
 
 /**
- * Text-only blue link button for secondary in-section actions.
- * e.g. "View History", "View Timeline", "View Manager History".
- * Locked specs: .field-helper-link, 14px/600, var(--blue), no bg or border.
- * inactive state: .field-helper-link--inactive (gray, non-interactive).
- * Disabled: color #D1E0FF (no opacity), non-interactive.
+ * Primary Link button (blue) — text-only link for in-section actions.
+ * e.g. "View History", "View Timeline", "Add Manager".
+ * Locked specs: .btn-link, 14px/600, color var(--blue), no bg/border, padding 0.
+ * Hover: underline on text (text-underline-offset 2px), icon excluded.
+ * Inactive: .btn-link--inactive (gray, non-interactive).
+ * Disabled: color #D1E0FF, non-interactive.
  */
-export function LinkButton({
+export function PrimaryLinkButton({
   label,
   onclick,
   id = '',
@@ -23,7 +24,7 @@ export function LinkButton({
   inactive = false,
   disabled = false,
   type = 'button',
-}: LinkButtonProps): string {
+}: PrimaryLinkButtonProps): string {
   const classes = [
     'btn-link',
     inactive ? 'btn-link--inactive' : '',
