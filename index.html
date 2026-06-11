@@ -5512,13 +5512,13 @@ select.cred-drawer-input option { color: var(--900); }
 .ov-manager-cell {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
 }
 .person-cell-remove {
   margin-left: auto;
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -5529,9 +5529,10 @@ select.cred-drawer-input option { color: var(--900); }
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
 }
+.person-cell-remove svg { width: 20px; height: 20px; }
 .person-cell-remove:hover { background: var(--50); color: var(--800); }
 .ov-manager-avatar {
-  width: 32px; height: 32px;
+  width: 36px; height: 36px;
   border-radius: 6px;
   background: #2F5C3D;
   display: flex; align-items: center; justify-content: center;
@@ -5544,7 +5545,7 @@ select.cred-drawer-input option { color: var(--900); }
 .ov-manager-info {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   min-width: 0;
 }
 .ov-manager-name {
@@ -5780,11 +5781,22 @@ select.cred-drawer-input option { color: var(--900); }
 #addTimelineSubmitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 #addTimelineModal { z-index: 500; }
 #addTimelineModal .modal-body { gap: 20px; }
+#reassignManagerModal { z-index: 500; }
+#reassignManagerModal .modal-body { gap: 20px; }
+#reassignManagerModal .modal { overflow: visible; }
+#reassignManagerModal .modal-body { overflow: visible; }
+#reassignManagerModal .person-picker-dropdown { position: static; margin-top: -4px; max-height: 320px; box-shadow: none; border-color: var(--gray-border); }
+#reassignManagerModal .person-picker-list { min-height: 0; }
 #addPersonModal { z-index: 500; }
 #addPersonModal .person-picker-dropdown { position: static; margin-top: -4px; max-height: 320px; box-shadow: none; border-color: var(--gray-border); }
 #addPersonModal .person-picker-list { min-height: 0; }
 #addPersonModal .modal { overflow: visible; }
 #addPersonModal .modal-body { overflow: visible; }
+#reassignManagerModal { z-index: 500; }
+#reassignManagerModal .person-picker-dropdown { position: static; margin-top: -4px; max-height: 320px; box-shadow: none; border-color: var(--gray-border); }
+#reassignManagerModal .person-picker-list { min-height: 0; }
+#reassignManagerModal .modal { overflow: visible; }
+#reassignManagerModal .modal-body { overflow: visible; gap: 20px; }
 .person-picker-cb { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--gray-border); background: var(--white); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
 .person-picker-cb.checked { background: var(--blue); border-color: var(--blue); }
 .person-picker-cb svg { display: none; }
@@ -6565,6 +6577,39 @@ select.cred-drawer-input option { color: var(--900); }
     <div class="modal-footer">
       <button class="btn" onclick="closeAddPersonModal()">Cancel</button>
       <button class="btn btn-primary" id="addPersonSubmit" disabled onclick="confirmAddPerson()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Reassign Manager Modal (shown when removing a Direct Report) ── -->
+<div class="modal-overlay" id="reassignManagerModal" onclick="closeReassignManagerModalOnOverlay(event)">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <span class="modal-title modal-title--lg">Reassign Manager</span>
+      <button class="modal-close" onclick="closeReassignManagerModal()" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M14 4L4 14M4 4l10 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="reassignDesc" style="font-size:14px;color:var(--600);">Please assign a new manager before removing.</div>
+      <div class="field" style="gap:8px;position:relative;">
+        <label>Assign new Manager</label>
+        <div class="person-select-trigger" id="reassignTrigger" onclick="toggleReassignDropdown()">
+          <span class="person-select-placeholder" id="reassignTriggerLabel">Select an option</span>
+          <svg style="flex-shrink:0;margin-left:auto;color:var(--500);" width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="person-picker-dropdown" id="reassignDropdown">
+          <div class="person-picker-search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M16 16l4 4"/></svg>
+            <input class="person-picker-search" id="reassignSearch" placeholder="Search" oninput="filterReassignList(this.value)" />
+          </div>
+          <div class="person-picker-list" id="reassignList"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeReassignManagerModal()">Cancel</button>
+      <button class="btn btn-primary" id="reassignSubmitBtn" disabled onclick="confirmReassignManager()">Confirm</button>
     </div>
   </div>
 </div>
@@ -8546,7 +8591,7 @@ function buildJobSectionHTML() {
             <button class="btn-link btn-link--blue" onclick="openAddPersonModal('report')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Direct Report</button>
           </div>
           <div style="height:1px;background:var(--150);"></div>
-          ${DIRECT_REPORTS.map(buildPersonCardHTML).join('')}
+          ${DIRECT_REPORTS.map(r => buildPersonCardHTML({ ...r, kind: 'report' })).join('')}
         </div>
       </div>
     </div>
@@ -8562,7 +8607,7 @@ function buildJobManagerReportsHTML() {
     name: m.name, code: m.code, managers: 1, reportees: m.reportees, managedBy: 'Linda Marsh'
   }));
   const mgrCards = activeManagers.map(buildPersonCardHTML).join('');
-  const rptCards = DIRECT_REPORTS.map(buildPersonCardHTML).join('');
+  const rptCards = DIRECT_REPORTS.map(r => buildPersonCardHTML({ ...r, kind: 'report' })).join('');
   return `<div class="drawer-content-body">
   <div class="job-grid">
     <div class="section" style="grid-column: 1 / 7;">
@@ -8850,6 +8895,9 @@ function buildPersonCardHTML(p) {
   const mgrText  = (mgrCount === 1 && p.managedBy) ? `Managed by ${p.managedBy}` : `${mgrCount} Manager${mgrCount === 1 ? '' : 's'}`;
   const metaParts = [`#${p.code}`, mgrText];
   if (rptCount > 0) metaParts.push(`${rptCount} Reportees`);
+  const removeHandler = p.kind === 'report'
+    ? `confirmRemoveDirectReport('${p.name}')`
+    : `removePersonAssignment(this, '${p.name}')`;
   return `
     <div class="ov-manager-cell">
       <div class="ov-manager-avatar">${initials}</div>
@@ -8857,7 +8905,7 @@ function buildPersonCardHTML(p) {
         <span class="ov-manager-name">${p.name}</span>
         <span class="ov-manager-role">${metaParts.join(' · ')}</span>
       </div>
-      <button class="person-cell-remove" onclick="removePersonAssignment(this, '${p.name}')" type="button" title="Remove">
+      <button class="person-cell-remove" onclick="${removeHandler}" type="button" title="Remove">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M14 6L6 14M6 6l8 8" stroke="currentColor" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>`;
@@ -8867,6 +8915,97 @@ function removePersonAssignment(btn, name) {
   const cell = btn.closest('.ov-manager-cell');
   if (cell) cell.remove();
   toast(`Removed ${name}`);
+}
+
+// ── Reassign Manager modal (Direct Report removal flow) ─────────────────────
+let _reassigningName = null;
+let _reassignSelected = null;
+let _reassignFilter = '';
+
+function confirmRemoveDirectReport(name) {
+  _reassigningName = name;
+  _reassignSelected = null;
+  _reassignFilter = '';
+  document.getElementById('reassignDesc').textContent =
+    `${name} will be removed from your direct reports. Please assign a new manager to continue.`;
+  document.getElementById('reassignTriggerLabel').textContent = 'Select an option';
+  document.getElementById('reassignTriggerLabel').classList.add('person-select-placeholder');
+  document.getElementById('reassignTriggerLabel').removeAttribute('style');
+  document.getElementById('reassignSearch').value = '';
+  document.getElementById('reassignSubmitBtn').disabled = true;
+  renderReassignList();
+  document.getElementById('reassignDropdown').classList.add('open');
+  document.getElementById('reassignTrigger').classList.add('open');
+  document.getElementById('reassignManagerModal').classList.add('open');
+}
+function closeReassignManagerModal() {
+  document.getElementById('reassignManagerModal').classList.remove('open');
+  document.getElementById('reassignDropdown').classList.remove('open');
+  document.getElementById('reassignTrigger').classList.remove('open');
+}
+function closeReassignManagerModalOnOverlay(e) {
+  if (e.target === document.getElementById('reassignManagerModal')) closeReassignManagerModal();
+}
+function toggleReassignDropdown() {
+  const dd = document.getElementById('reassignDropdown');
+  const tr = document.getElementById('reassignTrigger');
+  const isOpen = dd.classList.toggle('open');
+  tr.classList.toggle('open', isOpen);
+}
+function filterReassignList(val) {
+  _reassignFilter = (val || '').toLowerCase();
+  renderReassignList();
+}
+function renderReassignList() {
+  const list = document.getElementById('reassignList');
+  const f = _reassignFilter;
+  const users = ADD_PERSON_USERS.filter(u =>
+    !f || u.name.toLowerCase().includes(f) || u.code.includes(f)
+  );
+  if (!users.length) {
+    list.innerHTML = `<div style="padding:24px;text-align:center;color:var(--500);font-size:14px;">No users found</div>`;
+    return;
+  }
+  list.innerHTML = users.map(u => {
+    const initials = u.name.split(' ').map(w => w[0]).join('').toUpperCase();
+    const mgrText  = (u.managers === 1 && u.managedBy) ? `Managed by ${u.managedBy}` : `${u.managers} Manager${u.managers === 1 ? '' : 's'}`;
+    const idx = ADD_PERSON_USERS.indexOf(u);
+    const metaParts = [`#${u.code}`, mgrText];
+    if (u.reportees > 0) metaParts.push(`${u.reportees} Reportees`);
+    return `
+      <div class="person-picker-row" onclick="selectReassignUser(${idx})">
+        <div class="ov-manager-avatar" style="width:32px;height:32px;">${initials}</div>
+        <div class="person-picker-info">
+          <div class="person-picker-name">${u.name}</div>
+          <div class="person-picker-meta">${metaParts.join(' · ')}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+function selectReassignUser(idx) {
+  const u = ADD_PERSON_USERS[idx];
+  if (!u) return;
+  _reassignSelected = u;
+  const trLabel = document.getElementById('reassignTriggerLabel');
+  trLabel.textContent = u.name;
+  trLabel.classList.add('person-select-placeholder');
+  trLabel.removeAttribute('style');
+  document.getElementById('reassignDropdown').classList.remove('open');
+  document.getElementById('reassignTrigger').classList.remove('open');
+  document.getElementById('reassignSubmitBtn').disabled = false;
+}
+function confirmReassignManager() {
+  if (!_reassigningName || !_reassignSelected) return;
+  const removedName = _reassigningName;
+  const newMgrName = _reassignSelected.name;
+  const idx = DIRECT_REPORTS.findIndex(r => r.name === removedName);
+  if (idx >= 0) DIRECT_REPORTS.splice(idx, 1);
+  toast(`${removedName} reassigned to ${newMgrName}`);
+  closeReassignManagerModal();
+  const body = document.getElementById('drawerSectionBody');
+  if (body && body.innerHTML.includes('Manager &amp; Reports')) {
+    body.innerHTML = buildJobSectionHTML();
+  }
 }
 
 function openManagerHistoryPane() {
