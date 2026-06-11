@@ -1687,6 +1687,7 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
   display: flex; align-items: center; gap: 10px;
   padding: 16px 0 4px;
   font-size: 14px;
+  font-weight: 500;
   color: var(--800);
   cursor: pointer;
 }
@@ -1741,22 +1742,24 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
 
 .tax-jurisdiction-info {
   padding: 10px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 .tax-jur-heading {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--800);
-  margin-bottom: 3px;
 }
 .tax-jur-value {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--900);
   line-height: 1.4;
 }
@@ -6800,8 +6803,8 @@ select.cred-drawer-input option { color: var(--900); }
             <label>SSN</label>
             <div class="input-with-prefix" id="ssn-wrapper">
               <input type="password" id="p-ssn" class="field-input" style="border:none;box-shadow:none;" placeholder="XXX-XX-XXXX" autocomplete="off" />
-              <button type="button" class="input-prefix" style="border:none;border-left:1px solid var(--150);padding:0 10px;background:transparent;cursor:pointer;color:var(--600);" onclick="toggleSsn()" title="Show/hide SSN">
-                <svg id="ssn-eye" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>
+              <button type="button" class="input-prefix" style="border:none;border-left:1px solid var(--150);width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;background:transparent;cursor:pointer;color:var(--600);" onclick="toggleSsn()" title="Show/hide SSN">
+                <svg id="ssn-eye" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>
               </button>
             </div>
           </div>
@@ -12097,8 +12100,8 @@ function buildProfileSectionHTML() {
         <label>SSN</label>
         <div class="input-with-prefix" id="ssn-wrapper">
           <input type="password" id="p-ssn" class="field-input" style="border:none;box-shadow:none;" placeholder="XXX-XX-XXXX" autocomplete="off" />
-          <button type="button" class="input-prefix" style="border:none;border-left:1px solid var(--150);padding:0 10px;background:transparent;cursor:pointer;color:var(--600);" onclick="toggleSsn()" title="Show/hide SSN">
-            <svg id="ssn-eye" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>
+          <button type="button" class="input-prefix" style="border:none;border-left:1px solid var(--150);width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;background:transparent;cursor:pointer;color:var(--600);" onclick="toggleSsn()" title="Show/hide SSN">
+            <svg id="ssn-eye" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>
           </button>
         </div>
       </div>
@@ -12131,10 +12134,10 @@ function buildProfileSectionHTML() {
     <div class="field-grid profile-field-grid">
       <div class="field"><label>Residential Address <span class="field-required">*</span></label><input class="field-input" id="p-street" value="${street}" /></div>
       <div class="field"><label>Unit, Apt</label><input class="field-input" placeholder="Enter" /></div>
-      <div style="display:flex;gap:8px;align-items:flex-end;">
-        <div class="field" style="flex:2;"><label>City <span class="field-required">*</span></label><input class="field-input" id="p-city" value="${city}" placeholder="Enter" /></div>
-        <div class="field" style="flex:1;"><label>State <span class="field-required">*</span></label><div class="select-wrapper"><select class="field-input" id="p-state"><option value="">Select</option><option ${state==='AL'?'selected':''}>AL</option><option ${state==='AK'?'selected':''}>AK</option><option ${state==='AZ'?'selected':''}>AZ</option><option ${state==='AR'?'selected':''}>AR</option><option ${state==='CA'?'selected':''}>CA</option><option ${state==='CO'?'selected':''}>CO</option><option ${state==='CT'?'selected':''}>CT</option><option ${state==='DE'?'selected':''}>DE</option><option ${state==='FL'?'selected':''}>FL</option><option ${state==='GA'?'selected':''}>GA</option><option ${state==='HI'?'selected':''}>HI</option><option ${state==='ID'?'selected':''}>ID</option><option ${state==='IL'?'selected':''}>IL</option><option ${state==='IN'?'selected':''}>IN</option><option ${state==='IA'?'selected':''}>IA</option><option ${state==='KS'?'selected':''}>KS</option><option ${state==='KY'?'selected':''}>KY</option><option ${state==='LA'?'selected':''}>LA</option><option ${state==='ME'?'selected':''}>ME</option><option ${state==='MD'?'selected':''}>MD</option><option ${state==='MA'?'selected':''}>MA</option><option ${state==='MI'?'selected':''}>MI</option><option ${state==='MN'?'selected':''}>MN</option><option ${state==='MS'?'selected':''}>MS</option><option ${state==='MO'?'selected':''}>MO</option><option ${state==='MT'?'selected':''}>MT</option><option ${state==='NE'?'selected':''}>NE</option><option ${state==='NV'?'selected':''}>NV</option><option ${state==='NH'?'selected':''}>NH</option><option ${state==='NJ'?'selected':''}>NJ</option><option ${state==='NM'?'selected':''}>NM</option><option ${state==='NY'?'selected':''}>NY</option><option ${state==='NC'?'selected':''}>NC</option><option ${state==='ND'?'selected':''}>ND</option><option ${state==='OH'?'selected':''}>OH</option><option ${state==='OK'?'selected':''}>OK</option><option ${state==='OR'?'selected':''}>OR</option><option ${state==='PA'?'selected':''}>PA</option><option ${state==='RI'?'selected':''}>RI</option><option ${state==='SC'?'selected':''}>SC</option><option ${state==='SD'?'selected':''}>SD</option><option ${state==='TN'?'selected':''}>TN</option><option ${state==='TX'?'selected':''}>TX</option><option ${state==='UT'?'selected':''}>UT</option><option ${state==='VT'?'selected':''}>VT</option><option ${state==='VA'?'selected':''}>VA</option><option ${state==='WA'?'selected':''}>WA</option><option ${state==='WV'?'selected':''}>WV</option><option ${state==='WI'?'selected':''}>WI</option><option ${state==='WY'?'selected':''}>WY</option></select></div></div>
-        <div class="field" style="flex:1;"><label>Zip Code <span class="field-required">*</span></label><input class="field-input" id="p-zip" value="${zip}" placeholder="Enter" /></div>
+      <div style="display:flex;gap:24px;align-items:flex-end;">
+        <div class="field" style="flex:1;"><label>City <span class="field-required">*</span></label><input class="field-input" id="p-city" value="${city}" placeholder="Enter" /></div>
+        <div class="field" style="flex:0 0 96px;"><label>State <span class="field-required">*</span></label><div class="select-wrapper"><select class="field-input" id="p-state"><option value="">Select</option><option ${state==='AL'?'selected':''}>AL</option><option ${state==='AK'?'selected':''}>AK</option><option ${state==='AZ'?'selected':''}>AZ</option><option ${state==='AR'?'selected':''}>AR</option><option ${state==='CA'?'selected':''}>CA</option><option ${state==='CO'?'selected':''}>CO</option><option ${state==='CT'?'selected':''}>CT</option><option ${state==='DE'?'selected':''}>DE</option><option ${state==='FL'?'selected':''}>FL</option><option ${state==='GA'?'selected':''}>GA</option><option ${state==='HI'?'selected':''}>HI</option><option ${state==='ID'?'selected':''}>ID</option><option ${state==='IL'?'selected':''}>IL</option><option ${state==='IN'?'selected':''}>IN</option><option ${state==='IA'?'selected':''}>IA</option><option ${state==='KS'?'selected':''}>KS</option><option ${state==='KY'?'selected':''}>KY</option><option ${state==='LA'?'selected':''}>LA</option><option ${state==='ME'?'selected':''}>ME</option><option ${state==='MD'?'selected':''}>MD</option><option ${state==='MA'?'selected':''}>MA</option><option ${state==='MI'?'selected':''}>MI</option><option ${state==='MN'?'selected':''}>MN</option><option ${state==='MS'?'selected':''}>MS</option><option ${state==='MO'?'selected':''}>MO</option><option ${state==='MT'?'selected':''}>MT</option><option ${state==='NE'?'selected':''}>NE</option><option ${state==='NV'?'selected':''}>NV</option><option ${state==='NH'?'selected':''}>NH</option><option ${state==='NJ'?'selected':''}>NJ</option><option ${state==='NM'?'selected':''}>NM</option><option ${state==='NY'?'selected':''}>NY</option><option ${state==='NC'?'selected':''}>NC</option><option ${state==='ND'?'selected':''}>ND</option><option ${state==='OH'?'selected':''}>OH</option><option ${state==='OK'?'selected':''}>OK</option><option ${state==='OR'?'selected':''}>OR</option><option ${state==='PA'?'selected':''}>PA</option><option ${state==='RI'?'selected':''}>RI</option><option ${state==='SC'?'selected':''}>SC</option><option ${state==='SD'?'selected':''}>SD</option><option ${state==='TN'?'selected':''}>TN</option><option ${state==='TX'?'selected':''}>TX</option><option ${state==='UT'?'selected':''}>UT</option><option ${state==='VT'?'selected':''}>VT</option><option ${state==='VA'?'selected':''}>VA</option><option ${state==='WA'?'selected':''}>WA</option><option ${state==='WV'?'selected':''}>WV</option><option ${state==='WI'?'selected':''}>WI</option><option ${state==='WY'?'selected':''}>WY</option></select></div></div>
+        <div class="field" style="flex:0 0 96px;"><label>Zip Code <span class="field-required">*</span></label><input class="field-input" id="p-zip" value="${zip}" placeholder="Enter" /></div>
       </div>
     </div>
     <div class="tax-jurisdiction-info">
@@ -12162,10 +12165,10 @@ function buildProfileSectionHTML() {
       <div class="field-grid profile-field-grid">
         <div class="field"><label>Mailing Address</label><input class="field-input" placeholder="Enter" /></div>
         <div class="field"><label>Unit, Apt</label><input class="field-input" placeholder="Enter" /></div>
-        <div style="display:flex;gap:8px;align-items:flex-end;">
-          <div class="field" style="flex:2;"><label>City</label><input class="field-input" placeholder="Enter" /></div>
-          <div class="field" style="flex:1;"><label>State</label><div class="select-wrapper"><select class="field-input"><option value="">Select</option><option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option><option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option><option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option><option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option><option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option><option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option><option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option><option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option><option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option><option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option></select></div></div>
-          <div class="field" style="flex:1;"><label>Zip Code</label><input class="field-input" placeholder="Enter" /></div>
+        <div style="display:flex;gap:24px;align-items:flex-end;">
+          <div class="field" style="flex:1;"><label>City</label><input class="field-input" placeholder="Enter" /></div>
+          <div class="field" style="flex:0 0 96px;"><label>State</label><div class="select-wrapper"><select class="field-input"><option value="">Select</option><option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option><option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option><option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option><option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option><option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option><option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option><option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option><option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option><option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option><option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option></select></div></div>
+          <div class="field" style="flex:0 0 96px;"><label>Zip Code</label><input class="field-input" placeholder="Enter" /></div>
         </div>
       </div>
     </div>
