@@ -2016,7 +2016,7 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
 .ta-subnav-btn {
   padding: 12px 8px;
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--900);
   background: none;
   border: none;
@@ -8394,9 +8394,14 @@ function buildJobSectionHTML() {
       </div>
       <div class="field">
         <label>Job Level</label>
-        <label class="checkbox-field-label">
+        <div class="tl-field-readonly">
+          <span class="tl-field-val">Journeyman</span>
+          <span class="tl-field-effective">03/05/2025 - 03/05/2028</span>
+        </div>
+        <div class="field-helper-row" style="justify-content:space-between;">
           <button class="btn-link btn-link--blue" onclick="openAddTimelineModal('level')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add</button>
-        </label>
+          <button class="btn-link btn-link--gray" id="tl-view-btn-level" onclick="openTimelinePane('level')" type="button">View Timeline</button>
+        </div>
       </div>
 
       <div class="field">
