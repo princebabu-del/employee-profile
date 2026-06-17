@@ -1564,6 +1564,9 @@ tbody td.col-check { padding-left: 16px; padding-right: 8px; }
   gap: 24px;
 }
 .profile-field-grid .field { gap: 8px; }
+.profile-field-grid .field-input { height: 40px; font-size: 14px; }
+.profile-field-grid .input-with-prefix { min-height: 40px; }
+.profile-field-grid .input-with-prefix input { font-size: 14px; }
 .field {
   display: flex;
   flex-direction: column;
@@ -1687,7 +1690,7 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
 .checkbox-row {
   display: flex; align-items: center; gap: 10px;
   padding: 16px 0 4px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--800);
   cursor: pointer;
@@ -1742,7 +1745,8 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
 .tooltip-wrap:hover .tooltip { opacity: 1; }
 
 .tax-jurisdiction-info {
-  padding: 10px 0 4px;
+  padding: 0;
+  margin: 16px 0 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -6411,7 +6415,7 @@ select.cred-drawer-input option { color: var(--900); }
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Cell Phone</label>
-          <input class="form-input" id="f-phone" type="tel" placeholder="Enter 9-digit phone number" />
+          <input class="form-input" id="f-phone" type="tel" placeholder="Enter 8-digit number" />
         </div>
         <div class="form-group">
           <label class="form-label">Email</label>
@@ -6813,7 +6817,7 @@ select.cred-drawer-input option { color: var(--900); }
           <div class="field"><label>Personal Phone Number</label>
             <div class="input-with-prefix">
               <div class="input-prefix">🇺🇸 +1 <svg width="10" height="10" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#475467" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-              <input type="tel" placeholder="Enter 9-digit phone number" />
+              <input type="tel" placeholder="Enter 8-digit number" />
             </div>
           </div>
           <div class="field"><label>Personal Email</label><input class="field-input" type="email" placeholder="Enter" /></div>
@@ -6858,7 +6862,7 @@ select.cred-drawer-input option { color: var(--900); }
           <div class="field"><label>Phone Number</label>
             <div class="input-with-prefix">
               <div class="input-prefix">🇺🇸 +1 <svg width="10" height="10" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#475467" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-              <input type="tel" placeholder="Enter 9-digit phone number" />
+              <input type="tel" placeholder="Enter 8-digit number" />
             </div>
           </div>
           <div class="field"><label>Relationship</label><div class="select-wrapper"><select class="field-input"><option value="">Select</option><option>Spouse</option><option>Parent</option><option>Sibling</option><option>Child</option><option>Friend</option><option>Other</option></select></div></div>
@@ -12118,7 +12122,7 @@ function buildProfileSectionHTML() {
       <div class="field"><label>Personal Phone Number</label>
         <div class="input-with-prefix">
           <div class="input-prefix">🇺🇸 +1 <svg width="10" height="10" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#475467" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-          <input type="tel" id="p-personal-phone" placeholder="Enter 9-digit phone number" />
+          <input type="tel" id="p-personal-phone" placeholder="Enter 8-digit number" />
         </div>
       </div>
       <div class="field"><label>Personal Email</label><input class="field-input" id="p-personal-email" type="email" placeholder="Enter" /></div>
@@ -12173,7 +12177,7 @@ function buildProfileSectionHTML() {
       <div class="field"><label>Phone Number</label>
         <div class="input-with-prefix">
           <div class="input-prefix">🇺🇸 +1 <svg width="10" height="10" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="#475467" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-          <input type="tel" id="p-emg-phone" value="${emgPhone}" placeholder="Enter 9-digit phone number" />
+          <input type="tel" id="p-emg-phone" value="${emgPhone}" placeholder="Enter 8-digit number" />
         </div>
       </div>
       <div class="field"><label>Relationship</label><div class="select-wrapper"><select class="field-input"><option value="">Select</option><option>Spouse</option><option>Parent</option><option>Sibling</option><option>Child</option><option>Friend</option><option>Other</option></select></div></div>
