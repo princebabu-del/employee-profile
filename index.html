@@ -7793,7 +7793,17 @@ function openDrawer(id, restoreSection, restoreSubTab, restorePane) {
   document.getElementById('d-name').textContent = `${r.first} ${r.last}`;
   document.getElementById('d-code').textContent = `#${r.code || 'EMP' + String(r.id).padStart(4,'0')}`;
   document.getElementById('d-role').textContent = r.title || r.role || 'Worker';
-  document.getElementById('d-clocked').textContent = 'Clocked In: Mon, 08:00 AM';
+  {
+    _statusBandIndex = 0;
+    const _list = _statusBandList();
+    const _s = _list[0];
+    const band = document.getElementById('sidebarStatusBand');
+    const dot  = document.getElementById('sidebarStatusDot');
+    const lbl  = document.getElementById('d-clocked');
+    if (band) band.style.background = _s.bg;
+    if (dot)  { dot.style.background = _s.dot; dot.style.boxShadow = `0 0 0 3px ${_s.glow}`; }
+    if (lbl)  lbl.textContent = _s.text;
+  }
 
   const pFirst = document.getElementById('p-first');
   const pLast  = document.getElementById('p-last');
@@ -7883,7 +7893,7 @@ function closeDrawerKebab() {
 }
 
 // ── Status band demo cycle ────────────────────────────────────────────────
-const STATUS_BAND_STATES = [
+const STATUS_BAND_STATES_FINAL = [
   { text: 'Clocked In: Mon, 08:00 AM', bg: '#d1fadf', color: '#067647', dot: '#17b26a', glow: 'rgba(23,178,106,0.2)'  },
   { text: 'On Meal Break: Mon, 08:00 AM', bg: '#fef9c3', color: '#92400e', dot: '#f59e0b', glow: 'rgba(245,158,11,0.2)' },
   { text: 'Clocked Out: Mon, 04:00 PM',  bg: '#e9ecf0', color: '#394553', dot: '#64748b', glow: 'rgba(100,116,139,0.2)' },
@@ -7891,11 +7901,21 @@ const STATUS_BAND_STATES = [
   { text: 'Leave of Absence',            bg: '#e9ecf0', color: '#394553', dot: '#64748b', glow: 'rgba(100,116,139,0.2)' },
   { text: 'Terminated on Mar 05, 2026',  bg: '#fee2e2', color: '#b42318', dot: '#f04438', glow: 'rgba(240,68,56,0.2)'  },
 ];
+const STATUS_BAND_STATES_V1 = [
+  { text: 'Enabled',                     bg: '#d1fadf', color: '#067647', dot: '#17b26a', glow: 'rgba(23,178,106,0.2)'  },
+  { text: 'Onboarding',                  bg: '#ede9fe', color: '#4c1d95', dot: '#7c3aed', glow: 'rgba(124,58,237,0.2)' },
+  { text: 'LOA',                         bg: '#e9ecf0', color: '#394553', dot: '#64748b', glow: 'rgba(100,116,139,0.2)' },
+  { text: 'Terminated on Mar 05, 2026',  bg: '#fee2e2', color: '#b42318', dot: '#f04438', glow: 'rgba(240,68,56,0.2)'  },
+];
+function _statusBandList() {
+  return currentVersion === 'final' ? STATUS_BAND_STATES_FINAL : STATUS_BAND_STATES_V1;
+}
 let _statusBandIndex = 0;
 
 function cycleStatusBand() {
-  _statusBandIndex = (_statusBandIndex + 1) % STATUS_BAND_STATES.length;
-  const s    = STATUS_BAND_STATES[_statusBandIndex];
+  const list = _statusBandList();
+  _statusBandIndex = (_statusBandIndex + 1) % list.length;
+  const s    = list[_statusBandIndex];
   const band = document.getElementById('sidebarStatusBand');
   const dot  = document.getElementById('sidebarStatusDot');
   const lbl  = document.getElementById('d-clocked');
@@ -8034,6 +8054,7 @@ function ovAddBtn(section, heading) {
 }
 
 function buildOverviewSectionHTML() {
+  const isFinal     = currentVersion === 'final';
   const r           = currentDrawerEmployee;
   const code        = r ? (r.code || `EMP${String(r.id).padStart(4,'0')}`) : 'EMP0001';
   const status      = 'Enabled'; /* locked — do not change */
@@ -8168,7 +8189,7 @@ function buildOverviewSectionHTML() {
         </div>
       </div>
 
-      <div class="section">
+      ${!isFinal ? '' : `<div class="section">
         <div class="section-hd">
           <div class="section-hd-text"><span class="pay-sh">Upcoming Time Off</span></div>
           <div class="section-hd-action"><button class="btn-inline-link" onclick="navigateToDrawerSection('timeoff')">View All Requests</button></div>
@@ -8188,9 +8209,9 @@ function buildOverviewSectionHTML() {
             </tbody>
           </table>
         </div>
-      </div>
+      </div>`}
 
-      <div class="section">
+      ${!isFinal ? '' : `<div class="section">
         <div class="section-hd">
           <div class="section-hd-text"><span class="pay-sh">Shift Overview</span></div>
           <div class="section-hd-action">
@@ -8221,7 +8242,7 @@ function buildOverviewSectionHTML() {
             <span><span class="ov-legend-swatch" style="background:repeating-linear-gradient(45deg,transparent 0px,transparent 4px,#e4e7ec 4px,#e4e7ec 8px);border:1px solid #e4e7ec;"></span>Today</span>
           </div>
         </div>
-      </div>
+      </div>`}
 
     </div><!-- /.ov-main -->
 
@@ -8269,7 +8290,7 @@ function buildOverviewSectionHTML() {
         </div>
         </div><!-- /.ov-sidebar-inner -->
       </div><!-- /.ov-section -->
-      <div class="ov-section ov-section--last">
+      ${!isFinal ? '' : `<div class="ov-section ov-section--last">
         <h3 class="ov-section-title">Employment History</h3>
         <div class="ov-sidebar-inner">
         <div class="eh-timeline">
@@ -8303,7 +8324,7 @@ function buildOverviewSectionHTML() {
           </div>
         </div>
         </div><!-- /.ov-sidebar-inner -->
-      </div><!-- /.ov-section -->
+      </div><!-- /.ov-section -->`}
     </div><!-- /.ov-sidebar -->
 
   </div><!-- /.ov-grid -->
@@ -8690,6 +8711,9 @@ function switchTimeAttendanceTab(el) {
 }
 
 function buildTimeAttendanceSectionHTML() {
+  if (currentVersion !== 'final') {
+    return `<div class="drawer-content-body"><div class="ta-wrap"><div id="ta-tab-body">${buildAttendanceExceptionsSectionHTML()}</div></div></div>`;
+  }
   return `<div class="drawer-content-body"><div class="ta-wrap"><div id="ta-tab-body">${buildTimesheetSectionHTML()}</div></div></div>`;
 }
 
@@ -9516,6 +9540,15 @@ function togglePovBlock(id) {
 }
 
 function buildPayOverview() {
+  if (currentVersion !== 'final') {
+    return `<div class="pr-toggle-inline" style="margin-bottom: 24px;">
+      <label class="pay-sw"><input type="checkbox" checked><span class="pay-sw-track"></span></label>
+      <div>
+        <div class="pay-toggle-label">Payroll Active</div>
+        <div class="pay-toggle-desc">Employee is included in payroll runs and will receive paychecks</div>
+      </div>
+    </div>`;
+  }
   const moreIcon = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="5" r="1.6" fill="currentColor"/><circle cx="10" cy="10" r="1.6" fill="currentColor"/><circle cx="10" cy="15" r="1.6" fill="currentColor"/></svg>`;
   const chevDown = `<svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const filterIco = `<svg width="11" height="11" viewBox="0 0 20 20" fill="none"><path d="M3 5h14l-5 7v4l-4 1v-5L3 5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
@@ -9803,10 +9836,10 @@ function buildPaystubs() {
   return `<div class="section">
     <div class="section-hd">
       <div class="section-hd-text"><div class="pay-sh">Paystubs <span class="pay-count-badge">${rows.length}</span></div></div>
-      <button class="btn" onclick="toast('Downloading paystubs')">
+      ${currentVersion === 'final' ? `<button class="btn" onclick="toast('Downloading paystubs')">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3v10M5 9l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 17h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         Download
-      </button>
+      </button>` : ''}
     </div>
     <div class="pay-table-wrap"><table class="pay-table"><thead><tr>
       <th class="sortable" onclick="sortTable(this)">Start Date <span class="sort-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10V2M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></th><th class="sortable" onclick="sortTable(this)">End Date <span class="sort-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10V2M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></th><th class="sortable" onclick="sortTable(this)">Pay Day <span class="sort-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10V2M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></th>
@@ -11556,7 +11589,7 @@ function buildTimeOffLeave() {
   <div>
     <div>
 
-      <div class="section">
+      ${currentVersion !== 'final' ? '' : `<div class="section">
         <div class="section-hd">
           <div class="section-hd-text"><span class="pay-sh">Leave Requests <span class="pay-count-badge">2</span></span></div>
           <button class="btn" onclick="openCreateLeavePane()">
@@ -11611,7 +11644,7 @@ function buildTimeOffLeave() {
             </tbody>
           </table>
         </div>
-      </div>
+      </div>`}
 
       <div class="section">
         <div class="section-hd">
@@ -11621,6 +11654,18 @@ function buildTimeOffLeave() {
             Add Policy
           </button>
         </div>
+        ${currentVersion === 'final' ? '' : `
+        <div class="field-grid" style="margin-bottom:20px;grid-template-columns:repeat(3,1fr);"><div>
+          <div class="to-approver-label">Leave Approver</div>
+          <div class="to-approver-field" style="margin-bottom:0;" onclick="toast('Edit approvers')">
+            <span class="to-tag">John Doe <span class="to-tag-x" onclick="event.stopPropagation();toast('Removed John Doe')">&#215;</span></span>
+            <span class="to-tag">Jane Doe <span class="to-tag-x" onclick="event.stopPropagation();toast('Removed Jane Doe')">&#215;</span></span>
+            <span class="to-tag-more">...</span>
+            <span class="to-approver-chevron">
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </div></div>`}
         <div class="pay-table-wrap">
         <table class="pay-table">
           <thead><tr>
@@ -11863,7 +11908,8 @@ function buildHolidayTable(configKey) {
 
 function onHolidayConfigChange(sel) {
   selectedHolidayConfig = sel.value;
-  document.getElementById('to-holiday-table').innerHTML = sel.value ? buildHolidayTable(sel.value) : '';
+  const showTable = currentVersion === 'final';
+  document.getElementById('to-holiday-table').innerHTML = (sel.value && showTable) ? buildHolidayTable(sel.value) : '';
   const footer = document.querySelector('.drawer-content-footer');
   if (footer) {
     footer.style.display = sel.value ? 'flex' : 'none';
@@ -11887,7 +11933,7 @@ function buildTimeOffHoliday() {
     ['california',       'California State Holidays'],
   ];
   const optHTML = options.map(([v, l]) => `<option value="${v}"${v === selectedHolidayConfig ? ' selected' : ''}>${l}</option>`).join('');
-  const savedTable = selectedHolidayConfig ? buildHolidayTable(selectedHolidayConfig) : '';
+  const savedTable = (selectedHolidayConfig && currentVersion === 'final') ? buildHolidayTable(selectedHolidayConfig) : '';
   return `
     <div class="to-holiday-wrap">
       <div class="section">
@@ -12501,15 +12547,20 @@ function switchDrawerSection(el) {
     credentials: 'Credentials', assignments: 'Onboarding', documents: 'Documents',
     awards: 'Awards', access: 'Roles & Permissions'
   };
+  if (currentVersion !== 'final') titles.timeattendance = 'Attendance Exceptions';
   document.getElementById('drawer-section-title').textContent = titles[section] || 'Profile';
-  const sectionsWithSubnav = ['timeattendance', 'pay', 'timeoff', 'documents', 'scheduler'];
+  const sectionsWithSubnav = (currentVersion === 'final')
+    ? ['timeattendance', 'pay', 'timeoff', 'documents', 'scheduler']
+    : ['pay', 'timeoff', 'documents', 'scheduler'];
   const jobHasSubnavInV2 = (section === 'job' && currentVersion === 'v1_1');
   document.querySelector('.drawer-content-header').classList.toggle('has-subnav', sectionsWithSubnav.includes(section) || jobHasSubnavInV2);
   const subnavBar = document.getElementById('drawer-subnav-bar');
-  if (section === 'timeattendance') {
+  if (section === 'timeattendance' && currentVersion === 'final') {
     subnavBar.innerHTML = `
       <button class="ta-subnav-btn active" data-tab="timesheet" onclick="switchTimeAttendanceTab(this)">Timesheet</button>
       <button class="ta-subnav-btn" data-tab="exceptions" onclick="switchTimeAttendanceTab(this)">Attendance Exceptions</button>`;
+  } else if (section === 'timeattendance') {
+    subnavBar.innerHTML = '';
   } else if (section === 'pay') {
     const payTabs = [['Overview','overview'],['Pay Rates','payrates'],['Deductions','deductions'],['Reimbursements','reimbursements'],['Tax Information','taxinfo'],['Paystubs','paystubs']];
     subnavBar.innerHTML = payTabs.map(([label, id], i) =>
@@ -13150,10 +13201,10 @@ function buildCredentialsSectionHTML() {
           <input class="cred-search" placeholder="Search credentials…"
                  oninput="filterCredentials(this.value, getCredFilterValues('credCategoryFilter'), getCredFilterValues('credStatusFilter'))" />
         </div>
-        <div class="to-filter-select" onclick="openCredFilterPane()">
+        ${currentVersion === 'final' ? `<div class="to-filter-select" onclick="openCredFilterPane()">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           Filters
-        </div>
+        </div>` : ''}
         <div class="cred-view-toggle">
           <button class="cred-view-btn active" id="credViewTableBtn" onclick="switchCredView('table')" title="Table view">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="2.5" rx="1" fill="currentColor"/><rect x="2" y="8.75" width="16" height="2.5" rx="1" fill="currentColor"/><rect x="2" y="13.5" width="16" height="2.5" rx="1" fill="currentColor"/></svg>
@@ -15269,6 +15320,10 @@ try {
 .version-switcher-btn.active { background: var(--blue); border-color: var(--blue); color: var(--white); }
 /* v1.1: hide Scheduler nav item */
 body.version-v1_1 .drawer-nav-item[data-section="scheduler"] { display: none; }
+/* V1 (and v1.1): Move Time & Attendance below Roles & Permissions */
+body:not(.version-final) .drawer-nav-item[data-section="timeattendance"] { order: 1; }
+body:not(.version-final) .drawer-nav-item[data-section="awards"] { order: 2; }
+body:not(.version-final) .drawer-nav { display: flex; flex-direction: column; }
 </style>
 <script>
 let currentVersion = 'v1';
@@ -15280,6 +15335,18 @@ function setVersion(v) {
   document.querySelectorAll('#versionSwitcher .version-switcher-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.version === v));
   _jobSubTabV2 = 'general';
+  _statusBandIndex = 0;
+  const _list = _statusBandList();
+  const _s = _list[0];
+  const band = document.getElementById('sidebarStatusBand');
+  const dot  = document.getElementById('sidebarStatusDot');
+  const lbl  = document.getElementById('d-clocked');
+  if (band && dot && lbl) {
+    band.style.background = _s.bg;
+    dot.style.background  = _s.dot;
+    dot.style.boxShadow   = `0 0 0 3px ${_s.glow}`;
+    lbl.textContent       = _s.text;
+  }
   // If a section is currently rendered, re-render it (in particular Job and Scheduler).
   const activeNav = document.querySelector('.drawer-nav-item.active');
   if (activeNav) {
