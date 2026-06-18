@@ -13128,6 +13128,7 @@ function buildCredentialsSectionHTML() {
       <div class="cred-btn-group">
         <button class="cred-btn-group-item active" onclick="switchCredGroup(this)">Assigned <span class="cred-btn-badge">8</span></button>
         <button class="cred-btn-group-item" onclick="switchCredGroup(this)">Personal <span class="cred-btn-badge">3</span></button>
+        <button class="cred-btn-group-item" onclick="switchCredGroup(this)">Archived <span class="cred-btn-badge">0</span></button>
       </div>
       <div class="cred-toolbar-right">
         <div class="cred-search-wrap">
@@ -13149,7 +13150,7 @@ function buildCredentialsSectionHTML() {
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="11" y="2" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="2" y="11" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="11" y="11" width="7" height="7" rx="1.5" fill="currentColor"/></svg>
           </button>
         </div>
-        <button class="btn" onclick="openAddCredentialPane()">
+        <button class="btn" id="credAssignToolbarBtn" onclick="openAddCredentialPane()">
           <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           Assign
         </button>
@@ -13462,6 +13463,8 @@ function updateCredFilterBadges() {
 function switchCredGroup(btn) {
   btn.closest('.cred-btn-group').querySelectorAll('.cred-btn-group-item').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  const assignBtn = document.getElementById('credAssignToolbarBtn');
+  if (assignBtn) assignBtn.style.display = (btn.textContent.trim().startsWith('Personal')) ? 'none' : '';
   filterCredentials(
     document.querySelector('.cred-search').value,
     getCredFilterValues('credCategoryFilter'),
