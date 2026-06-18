@@ -15296,9 +15296,18 @@ try {
 <!-- ── Version Switcher (internal review) ─────────────────────────────────── -->
 <div id="versionSwitcher" class="version-switcher">
   <div class="version-switcher-label">Version</div>
-  <button class="version-switcher-btn active" data-version="v1" onclick="setVersion('v1')">V1</button>
-  <button class="version-switcher-btn" data-version="v1_1" onclick="setVersion('v1_1')">v1.1</button>
-  <button class="version-switcher-btn" data-version="final" onclick="setVersion('final')">Final</button>
+  <button class="version-switcher-btn active" data-version="v1" onclick="setVersion('v1')">
+    <span class="version-switcher-title">V1</span>
+    <span class="version-switcher-desc">Initial Requirements</span>
+  </button>
+  <button class="version-switcher-btn" data-version="v1_1" onclick="setVersion('v1_1')">
+    <span class="version-switcher-title">v1.1</span>
+    <span class="version-switcher-desc">Job tab changes</span>
+  </button>
+  <button class="version-switcher-btn" data-version="final" onclick="setVersion('final')">
+    <span class="version-switcher-title">Final</span>
+    <span class="version-switcher-desc">Additional features</span>
+  </button>
 </div>
 <style>
 .version-switcher {
@@ -15313,11 +15322,17 @@ try {
 }
 .version-switcher-btn {
   appearance: none; border: 1px solid var(--gray-border); background: var(--white);
-  color: var(--800); font: 600 13px/1 inherit; padding: 8px 14px;
-  border-radius: 6px; cursor: pointer; text-align: left; min-width: 80px;
+  color: var(--800); padding: 8px 14px; border-radius: 6px; cursor: pointer;
+  text-align: left; min-width: 140px;
+  display: flex; flex-direction: column; gap: 2px;
 }
-.version-switcher-btn:hover { border-color: var(--blue); color: var(--blue); }
-.version-switcher-btn.active { background: var(--blue); border-color: var(--blue); color: var(--white); }
+.version-switcher-title { font: 600 13px/1.2 inherit; color: inherit; }
+.version-switcher-desc { font: 500 11px/1.3 inherit; color: var(--500); }
+.version-switcher-btn:hover { border-color: var(--blue); }
+.version-switcher-btn:hover .version-switcher-title { color: var(--blue); }
+.version-switcher-btn.active { background: var(--blue); border-color: var(--blue); }
+.version-switcher-btn.active .version-switcher-title { color: var(--white); }
+.version-switcher-btn.active .version-switcher-desc { color: rgba(255,255,255,0.85); }
 /* v1.1: hide Scheduler nav item */
 body.version-v1_1 .drawer-nav-item[data-section="scheduler"] { display: none; }
 /* V1 (and v1.1): Move Time & Attendance below Roles & Permissions */
