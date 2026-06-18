@@ -14071,7 +14071,11 @@ function isExpired(dateStr) {
 }
 
 function renderCredCards(list) {
-  if (!list.length) return '<div class="cred-empty">No credentials match your search.</div>';
+  if (!list.length) {
+    const activeGroupBtn = document.querySelector('.cred-btn-group-item.active');
+    const group = activeGroupBtn ? activeGroupBtn.textContent.trim().toLowerCase().split(' ')[0] : '';
+    return `<div class="cred-empty">${group === 'archived' ? 'No credentials.' : 'No credentials match your search.'}</div>`;
+  }
   const kebabIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="5" r="1.5" fill="currentColor"/><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="10" cy="15" r="1.5" fill="currentColor"/></svg>`;
   const alertIcon = `<svg class="cred-status-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="var(--red-text)"/><path d="M8 4v4.5M8 10.5v.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>`;
   const warnIcon  = `<svg class="cred-status-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="var(--yellow-text)"/><path d="M8 4v4.5M8 10.5v.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>`;
@@ -14193,8 +14197,11 @@ function renderCredTable(list) {
     const cls = col.cls ? ` ${col.cls}` : '';
     return `<th class="sortable${sortClass}${cls}" onclick="sortCredTable('${col.key}')">${col.label}${sortIcon}</th>`;
   }).join('') + `<th class="cred-td-kebab"></th>`;
+  const _activeGroupBtn = document.querySelector('.cred-btn-group-item.active');
+  const _activeGroup = _activeGroupBtn ? _activeGroupBtn.textContent.trim().toLowerCase().split(' ')[0] : '';
+  const _emptyMsg = _activeGroup === 'archived' ? 'No credentials.' : 'No credentials match your search.';
   const rows = list.length === 0
-    ? `<tr><td colspan="${cols.length + 2}" style="text-align:center;color:var(--400);padding:32px;">No credentials match your search.</td></tr>`
+    ? `<tr><td colspan="${cols.length + 2}" style="text-align:center;color:var(--400);padding:32px;">${_emptyMsg}</td></tr>`
     : list.map(c => {
         const idx = CREDENTIALS_DATA.indexOf(c);
         const isChecked = selectedCredIds.has(idx);
