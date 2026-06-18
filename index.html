@@ -8310,7 +8310,8 @@ function buildOverviewSectionHTML() {
 </div>`;
 }
 
-function buildJobSectionHTML() {
+function buildJobSectionHTML(opts) {
+  opts = opts || {};
   const r         = currentDrawerEmployee;
   const role      = r ? r.role       : 'Worker';
   const code      = r ? (r.code || `EMP${String(r.id).padStart(4,'0')}`) : 'EMP0001';
@@ -8565,7 +8566,7 @@ function buildJobSectionHTML() {
     </div>
   </div>
 
-  <div class="section">
+  ${opts.excludeManagerReports ? '' : `<div class="section">
     <div class="section-hd">
       <div class="section-hd-text"><span class="pay-sh">Manager &amp; Reports</span></div>
       <div class="section-hd-action">
@@ -8595,7 +8596,7 @@ function buildJobSectionHTML() {
         </div>
       </div>
     </div>
-  </div>
+  </div>`}
 
   </div><!-- /.job-grid -->
 </div>`;
@@ -12502,7 +12503,8 @@ function switchDrawerSection(el) {
   };
   document.getElementById('drawer-section-title').textContent = titles[section] || 'Profile';
   const sectionsWithSubnav = ['timeattendance', 'pay', 'timeoff', 'documents', 'scheduler'];
-  document.querySelector('.drawer-content-header').classList.toggle('has-subnav', sectionsWithSubnav.includes(section));
+  const jobHasSubnavInV2 = (section === 'job' && currentVersion === 'v1_1');
+  document.querySelector('.drawer-content-header').classList.toggle('has-subnav', sectionsWithSubnav.includes(section) || jobHasSubnavInV2);
   const subnavBar = document.getElementById('drawer-subnav-bar');
   if (section === 'timeattendance') {
     subnavBar.innerHTML = `
@@ -12524,6 +12526,10 @@ function switchDrawerSection(el) {
     subnavBar.innerHTML = `
       <button class="ta-subnav-btn active" data-tab="projects" onclick="switchSchedulerTab('projects')">Projects</button>
       <button class="ta-subnav-btn" data-tab="costcodes" onclick="switchSchedulerTab('costcodes')">Cost Codes</button>`;
+  } else if (jobHasSubnavInV2) {
+    const jobTabs = [['General','general'],['Work Allocation','workallocation'],['Manager & Reports','managerreports']];
+    subnavBar.innerHTML = jobTabs.map(([label, id]) =>
+      `<button class="ta-subnav-btn${id===_jobSubTabV2?' active':''}" data-tab="${id}" onclick="switchJobV2Tab(this,'${id}')">${label}</button>`).join('');
   } else {
     subnavBar.innerHTML = '';
   }
@@ -12540,7 +12546,13 @@ function switchDrawerSection(el) {
     footer.style.display = 'none';
     body.addEventListener('input', () => { footer.style.display = ''; }, { once: true });
   } else if (section === 'job') {
-    body.innerHTML = buildJobSectionHTML();
+    if (currentVersion === 'v1_1') {
+      if (_jobSubTabV2 === 'workallocation') body.innerHTML = buildJobWorkAllocationHTML();
+      else if (_jobSubTabV2 === 'managerreports') body.innerHTML = buildJobManagerReportsV2HTML();
+      else body.innerHTML = buildJobSectionHTML({ excludeManagerReports: true });
+    } else {
+      body.innerHTML = buildJobSectionHTML();
+    }
     footer.innerHTML = `<button class="btn" onclick="closeDrawer()">Cancel</button>
        <button class="btn btn-primary" onclick="saveJob()">Save</button>`;
     footer.style.display = 'none';
@@ -15219,5 +15231,192 @@ try {
 
 </script>
 <div id="thFloatTip"></div>
+
+<!-- ── Version Switcher (internal review) ─────────────────────────────────── -->
+<div id="versionSwitcher" class="version-switcher">
+  <div class="version-switcher-label">Version</div>
+  <button class="version-switcher-btn active" data-version="v1" onclick="setVersion('v1')">V1</button>
+  <button class="version-switcher-btn" data-version="v1_1" onclick="setVersion('v1_1')">v1.1</button>
+  <button class="version-switcher-btn" data-version="final" onclick="setVersion('final')">Final</button>
+</div>
+<style>
+.version-switcher {
+  position: fixed; left: 16px; bottom: 16px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 6px;
+  background: var(--white); border: 1px solid var(--gray-border);
+  border-radius: 10px; padding: 8px; box-shadow: 0 4px 12px rgba(16,24,40,.08);
+}
+.version-switcher-label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .04em; color: var(--500); padding: 2px 4px 2px;
+}
+.version-switcher-btn {
+  appearance: none; border: 1px solid var(--gray-border); background: var(--white);
+  color: var(--800); font: 600 13px/1 inherit; padding: 8px 14px;
+  border-radius: 6px; cursor: pointer; text-align: left; min-width: 80px;
+}
+.version-switcher-btn:hover { border-color: var(--blue); color: var(--blue); }
+.version-switcher-btn.active { background: var(--blue); border-color: var(--blue); color: var(--white); }
+/* v1.1: hide Scheduler nav item */
+body.version-v1_1 .drawer-nav-item[data-section="scheduler"] { display: none; }
+</style>
+<script>
+let currentVersion = 'v1';
+let _jobSubTabV2 = 'general';
+function setVersion(v) {
+  currentVersion = v;
+  document.body.classList.remove('version-v1','version-v1_1','version-final');
+  document.body.classList.add('version-' + v);
+  document.querySelectorAll('#versionSwitcher .version-switcher-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.version === v));
+  _jobSubTabV2 = 'general';
+  // If a section is currently rendered, re-render it (in particular Job and Scheduler).
+  const activeNav = document.querySelector('.drawer-nav-item.active');
+  if (activeNav) {
+    // If v1.1 and active section was scheduler (now hidden), fall back to Job.
+    if (v === 'v1_1' && activeNav.dataset.section === 'scheduler') {
+      const jobNav = document.querySelector('.drawer-nav-item[data-section="job"]');
+      if (jobNav) { switchDrawerSection(jobNav); return; }
+    }
+    switchDrawerSection(activeNav);
+  }
+}
+document.body.classList.add('version-v1');
+
+// ── v1.1 Job sub-tab rendering ────────────────────────────────────────────
+function switchJobV2Tab(el, tabId) {
+  _jobSubTabV2 = tabId;
+  document.getElementById('drawer-subnav-bar').querySelectorAll('.ta-subnav-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const body = document.getElementById('drawerSectionBody');
+  if (tabId === 'general') body.innerHTML = buildJobSectionHTML({ excludeManagerReports: true });
+  else if (tabId === 'workallocation') body.innerHTML = buildJobWorkAllocationHTML();
+  else if (tabId === 'managerreports') body.innerHTML = buildJobManagerReportsV2HTML();
+}
+
+function buildJobWorkAllocationHTML() {
+  const sortIcon = `<span class="sort-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10V2M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+  const caretRight = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const caretDownGray = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#98a2b3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const statePill = `<span class="badge badge-enabled" style="display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:99px;font-size:14px;font-weight:500;"><span class="badge-dot" style="width:6px;height:6px;border-radius:50%;background:#17b26a;"></span>Active</span>`;
+  const statusPill = `<span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:99px;font-size:14px;font-weight:500;background:#eff8ff;border:1px solid #b2ddff;color:#175cd3;">In Progress</span>`;
+  const mgrChip = n => `<span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:99px;font-size:13px;font-weight:500;background:var(--50);border:1px solid var(--gray-border);color:var(--800);">${n}</span>`;
+  const completionBar = pct => `<div style="display:inline-flex;align-items:center;gap:8px;"><div style="width:80px;height:6px;border-radius:99px;background:var(--150);overflow:hidden;"><div style="width:${pct}%;height:100%;background:${pct>0?'var(--700)':'transparent'};"></div></div><span style="font-size:14px;color:var(--800);">${pct}%</span></div>`;
+  const searchIco = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M16 16l4 4"/></svg>`;
+  const plusIco = `<svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+
+  const projectsRows = SCHEDULER_PROJECTS_DATA.map(p => `<tr>
+      <td style="width:36px;color:var(--500);">${p.expandable ? caretRight : ''}</td>
+      <td style="color:var(--900);font-weight:500;">${p.name}</td>
+      <td>${p.code || ''}</td>
+      <td>${statePill}</td>
+      <td>${p.address}</td>
+      <td>${p.start}</td>
+      <td>${p.end}</td>
+      <td><span style="display:inline-flex;flex-wrap:wrap;gap:6px;">${p.managers.map(mgrChip).join('')}</span></td>
+      <td>${statusPill}</td>
+      <td>${p.client}</td>
+      <td>${completionBar(p.completion)}</td>
+    </tr>`).join('');
+  const costcodesRows = SCHEDULER_COSTCODES_DATA.map(c => `<tr>
+      <td style="width:120px;"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:6px;font-size:13px;font-weight:500;background:var(--100);color:var(--800);">${c.code}</span></td>
+      <td>${c.name}</td>
+      <td style="width:36px;text-align:right;">${c.expandable ? caretDownGray : ''}</td>
+    </tr>`).join('');
+
+  return `<div class="drawer-content-body" style="display:block;min-width:0;">
+    <div class="section">
+      <div class="section-hd">
+        <div class="section-hd-text"><span class="pay-sh">Projects</span></div>
+        <div class="section-hd-action">
+          <div class="cred-search-wrap" style="width:280px;">${searchIco}<input class="cred-search" placeholder="Search projects…" oninput="filterWorkAllocTable('projects', this.value)"/></div>
+          <button class="btn" onclick="toast('Add Project')">${plusIco}Add Project</button>
+        </div>
+      </div>
+      <div id="waPanelProjects" class="pay-table-wrap">
+        <table class="pay-table">
+          <thead><tr>
+            <th style="width:36px;"></th>
+            <th class="sortable" onclick="sortTable(this)">Project Name ${sortIcon}</th>
+            <th class="sortable" onclick="sortTable(this)">Project Code ${sortIcon}</th>
+            <th class="sortable" onclick="sortTable(this)">State ${sortIcon}</th>
+            <th class="sortable" onclick="sortTable(this)">Address ${sortIcon}</th>
+            <th class="sortable" onclick="sortTable(this)">Start Date ${sortIcon}</th>
+            <th class="sortable" onclick="sortTable(this)">End Date ${sortIcon}</th>
+            <th class="sortable" onclick="sortTable(this)">Project Managers ${sortIcon}</th>
+            <th class="sortable" onclick="sortTable(this)">Status ${sortIcon}</th>
+            <th class="sortable" onclick="sortTable(this)">Client ${sortIcon}</th>
+            <th class="sortable" onclick="sortTable(this)">Completion ${sortIcon}</th>
+          </tr></thead>
+          <tbody>${projectsRows}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-hd">
+        <div class="section-hd-text"><span class="pay-sh">Cost Codes</span></div>
+        <div class="section-hd-action">
+          <div class="cred-search-wrap" style="width:280px;">${searchIco}<input class="cred-search" placeholder="Search cost codes…" oninput="filterWorkAllocTable('costcodes', this.value)"/></div>
+          <button class="btn" onclick="toast('Add Cost Code')">${plusIco}Add Cost Code</button>
+        </div>
+      </div>
+      <div id="waPanelCostCodes" class="pay-table-wrap">
+        <table class="pay-table">
+          <thead><tr>
+            <th class="sortable" onclick="sortTable(this)" style="width:120px;">Code ${sortIcon}</th>
+            <th class="sortable" onclick="sortTable(this)">Name ${sortIcon}</th>
+            <th style="width:36px;"></th>
+          </tr></thead>
+          <tbody>${costcodesRows}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+function filterWorkAllocTable(which, query) {
+  const q = (query || '').toLowerCase();
+  const panel = document.getElementById(which === 'projects' ? 'waPanelProjects' : 'waPanelCostCodes');
+  if (!panel) return;
+  panel.querySelectorAll('tbody tr').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function buildJobManagerReportsV2HTML() {
+  const orgIco = `<svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M5 2H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9M8 1h5m0 0v5m0-5L6 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const activeMgrs = MANAGER_HISTORY.filter(m => m.status === 'active').map(m => buildPersonCardHTML({ name: m.name, code: m.code, managers: 1, reportees: m.reportees, managedBy: 'Linda Marsh' })).join('');
+  const rptCards = DIRECT_REPORTS.map(r => buildPersonCardHTML({ ...r, kind: 'report' })).join('');
+  return `<div class="drawer-content-body">
+    <div style="display:flex;align-items:center;justify-content:flex-start;margin-bottom:24px;">
+      <button class="btn-link btn-link--gray" onclick="toast('View Org Chart')" type="button" style="display:inline-flex;align-items:center;gap:4px;">View Org Chart${orgIco}</button>
+    </div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
+      <div class="ov-sidebar-inner">
+        <div style="display:flex;flex-direction:column;gap:24px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <span style="font-size:16px;font-weight:600;color:var(--900);">Manager</span>
+            <button class="btn-link btn-link--blue" onclick="openAddPersonModal('manager')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Manager</button>
+          </div>
+          <div style="height:1px;background:var(--150);"></div>
+          ${activeMgrs}
+          <button class="btn-link btn-link--gray" id="mgr-history-btn" onclick="openManagerHistoryPane()" type="button" style="align-self:flex-start;">View Manager History</button>
+        </div>
+      </div>
+      <div class="ov-sidebar-inner">
+        <div style="display:flex;flex-direction:column;gap:24px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <span style="font-size:16px;font-weight:600;color:var(--900);">Direct Reports</span>
+            <button class="btn-link btn-link--blue" onclick="openAddPersonModal('report')" type="button" style="display:inline-flex;align-items:center;gap:4px;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Add Direct Report</button>
+          </div>
+          <div style="height:1px;background:var(--150);"></div>
+          ${rptCards}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+</script>
 </body>
 </html>
