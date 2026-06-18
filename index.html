@@ -13476,7 +13476,10 @@ function switchCredGroup(btn) {
   btn.closest('.cred-btn-group').querySelectorAll('.cred-btn-group-item').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const assignBtn = document.getElementById('credAssignToolbarBtn');
-  if (assignBtn) assignBtn.style.display = (btn.textContent.trim().startsWith('Personal')) ? 'none' : '';
+  if (assignBtn) {
+    const label = btn.textContent.trim();
+    assignBtn.style.display = (label.startsWith('Personal') || label.startsWith('Archived')) ? 'none' : '';
+  }
   filterCredentials(
     document.querySelector('.cred-search').value,
     getCredFilterValues('credCategoryFilter'),
