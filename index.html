@@ -6728,7 +6728,7 @@ select.cred-drawer-input option { color: var(--900); }
       </div>
       <div class="drawer-nav-item" data-section="timeattendance" onclick="switchDrawerSection(this)">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        Time &amp; Attendance
+        <span class="drawer-nav-item-label" id="navLabel-timeattendance">Time &amp; Attendance</span>
       </div>
       <div class="drawer-nav-item" data-section="timeoff" onclick="switchDrawerSection(this)">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5h-15A7.5 7.5 0 0 1 10 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 10v6.5a1.5 1.5 0 0 1-3 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 2.5v7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -15351,6 +15351,8 @@ function setVersion(v) {
   document.querySelectorAll('#versionSwitcher .version-switcher-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.version === v));
   _jobSubTabV2 = 'general';
+  const taLabel = document.getElementById('navLabel-timeattendance');
+  if (taLabel) taLabel.textContent = (v === 'final') ? 'Time & Attendance' : 'Attendance Exceptions';
   _statusBandIndex = 0;
   const _list = _statusBandList();
   const _s = _list[0];
@@ -15375,6 +15377,10 @@ function setVersion(v) {
   }
 }
 document.body.classList.add('version-v1');
+document.addEventListener('DOMContentLoaded', () => {
+  const taLabel = document.getElementById('navLabel-timeattendance');
+  if (taLabel && currentVersion !== 'final') taLabel.textContent = 'Attendance Exceptions';
+});
 
 // ── v1.1 Job sub-tab rendering ────────────────────────────────────────────
 function switchJobV2Tab(el, tabId) {
