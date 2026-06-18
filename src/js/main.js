@@ -1156,6 +1156,7 @@ function buildAttendanceExceptionsSectionHTML() {
   const calIco = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h14M7 2v4M13 2v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
   const dlIco  = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3v10M6 9l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 14v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
   const weekRange = (() => { const now = new Date(); const mon = new Date(now); mon.setDate(now.getDate() - ((now.getDay()+6)%7)); const sun = new Date(mon); sun.setDate(mon.getDate()+6); const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const f = d => `${m[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; return `${f(mon)} – ${f(sun)}`; })();
+  const totalDemeritPoints = 0;
   return `
   <div class="ae-stack">
     <div class="ae-toolbar">
@@ -1163,15 +1164,15 @@ function buildAttendanceExceptionsSectionHTML() {
         <span>${weekRange}</span>
         ${calIco}
       </button>
-      <button class="ae-csv-btn" onclick="toast('Downloading CSV')">
+      <button class="btn" onclick="toast('Downloading CSV')">
         ${dlIco} Download CSV
       </button>
     </div>
 
-    <div class="ae-summary">
+    ${totalDemeritPoints > 0 ? `<div class="ae-summary">
       <span class="ae-summary-lbl">Total Demerit Points</span>
-      <span class="ae-summary-val">0 points</span>
-    </div>
+      <span class="ae-summary-val">${totalDemeritPoints} points</span>
+    </div>` : ''}
 
     <div class="ae-table-wrap">
       <table class="ae-table">
