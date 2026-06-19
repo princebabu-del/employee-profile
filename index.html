@@ -9514,6 +9514,7 @@ function switchPayTab(btn, tabId) {
     overview: buildPayOverview, paystubs: buildPaystubs,
     deductions: buildPayDeductions, payrates: buildPayRates,
     reimbursements: buildPayReimbursements, taxinfo: buildPayTaxInfo,
+    documents: buildPayDocumentsHTML,
   }[tabId] || buildPayOverview)();
   if (tabId === 'overview') setupPayOverviewScroll();
   _saveDrawerState({ subTab: tabId });
@@ -12569,6 +12570,7 @@ function switchDrawerSection(el) {
     subnavBar.innerHTML = '';
   } else if (section === 'pay') {
     const payTabs = [['Overview','overview'],['Pay Rates','payrates'],['Deductions','deductions'],['Reimbursements','reimbursements'],['Tax Information','taxinfo'],['Paystubs','paystubs']];
+    if (currentVersion !== 'v1_1') payTabs.push(['Documents','documents']);
     subnavBar.innerHTML = payTabs.map(([label, id], i) =>
       `<button class="ta-subnav-btn${i===0?' active':''}" data-tab="${id}" onclick="switchPayTab(this,'${id}')">${label}</button>`).join('');
   } else if (section === 'timeoff') {
@@ -12780,6 +12782,7 @@ function buildOnboardingTasksSectionHTML() {
         <tbody>${rows}</tbody>
       </table>
     </div>
+    ${currentVersion !== 'v1_1' ? buildOnboardingDocsSectionHTML() : ''}
 </div>
 <div id="assignTasksPane" class="side-drawer">
   <div class="drawer-hd">
@@ -12915,6 +12918,94 @@ const ONBOARDING_DOCS_DATA = [
 const PAYROLL_DOCS_DATA = [
   { name: 'W-4 Form', signedDate: '03/15/2026', year: '2026', jurisdiction: 'Federal' },
 ];
+
+function buildOnboardingDocsSectionHTML() {
+  const today = new Date();
+  const docKebabIcon = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="5" r="1.6" fill="currentColor"/><circle cx="10" cy="10" r="1.6" fill="currentColor"/><circle cx="10" cy="15" r="1.6" fill="currentColor"/></svg>`;
+  const eyeIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0"><path d="M1.667 10S4.167 4.167 10 4.167 18.333 10 18.333 10 15.833 15.833 10 15.833 1.667 10 1.667 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>`;
+  const sortIcon = `<span class="sort-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10V2M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+  const rows = ONBOARDING_DOCS_DATA.map((d, i) => {
+    const [m, dy, y] = d.expiresOn.split('/').map(Number);
+    const expired = new Date(y, m - 1, dy) < today;
+    const expiresCell = expired
+      ? `<span>${d.expiresOn}</span><br><span class="doc-expired-label">Expired</span>`
+      : d.expiresOn;
+    return `<tr data-doc-idx="${i}" data-doc-type="onboarding">
+      <td>${d.name}</td>
+      <td>${d.completedOn}</td>
+      <td>${expiresCell}</td>
+      <td>${d.completedBy}</td>
+      <td>${d.notes}</td>
+      <td class="pay-td-docs" style="white-space:nowrap;text-align:right;">
+        <span style="display:inline-flex;align-items:center;gap:16px;">
+          <button class="btn-link" style="display:inline-flex;align-items:center;gap:4px;" onclick="toast('View Document')">${eyeIcon}View</button>
+          <button class="pay-row-kebab" onclick="toggleDocRowKebab(event, ${i}, 'onboarding')" aria-label="More">${docKebabIcon}</button>
+        </span>
+      </td>
+    </tr>`;
+  }).join('');
+  return `<div class="section" style="margin-top:40px;">
+    <div class="section-hd">
+      <div class="section-hd-text"><span class="pay-sh">Documents</span></div>
+      <div class="section-hd-action">
+        <button class="btn" onclick="openAddDocumentPane()">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 3v12M3 9h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Add Document
+        </button>
+      </div>
+    </div>
+    <div class="pay-table-wrap">
+      <table class="pay-table">
+        <thead><tr>
+          <th class="sortable" onclick="sortTable(this)">Document Name ${sortIcon}</th>
+          <th class="sortable" onclick="sortTable(this)">Completed On ${sortIcon}</th>
+          <th class="sortable" onclick="sortTable(this)">Expiration Date ${sortIcon}</th>
+          <th class="sortable" onclick="sortTable(this)">Completed By ${sortIcon}</th>
+          <th class="sortable" onclick="sortTable(this)">Notes ${sortIcon}</th>
+          <th class="pay-td-docs"></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function buildPayDocumentsHTML() {
+  const docKebabIcon = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="5" r="1.6" fill="currentColor"/><circle cx="10" cy="10" r="1.6" fill="currentColor"/><circle cx="10" cy="15" r="1.6" fill="currentColor"/></svg>`;
+  const eyeIcon = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0"><path d="M1.667 10S4.167 4.167 10 4.167 18.333 10 18.333 10 15.833 15.833 10 15.833 1.667 10 1.667 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>`;
+  const sortIcon = `<span class="sort-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10V2M3 5l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+  const rows = PAYROLL_DOCS_DATA.length
+    ? PAYROLL_DOCS_DATA.map((d, i) => `<tr data-doc-idx="${i}" data-doc-type="payroll">
+        <td>${d.name}</td>
+        <td>${d.signedDate}</td>
+        <td>${d.year}</td>
+        <td>${d.jurisdiction}</td>
+        <td class="pay-td-docs" style="white-space:nowrap;text-align:right;">
+          <span style="display:inline-flex;align-items:center;gap:16px;">
+            <button class="btn-link" style="display:inline-flex;align-items:center;gap:4px;" onclick="toast('View Document')">${eyeIcon}View</button>
+            <button class="pay-row-kebab" onclick="toggleDocRowKebab(event, ${i}, 'payroll')" aria-label="More">${docKebabIcon}</button>
+          </span>
+        </td>
+      </tr>`).join('')
+    : `<tr><td colspan="5" class="pay-empty-state">No rows</td></tr>`;
+  return `<div class="section">
+    <div class="section-hd">
+      <div class="section-hd-text"><span class="pay-sh">Documents</span></div>
+    </div>
+    <div class="pay-table-wrap">
+      <table class="pay-table">
+        <thead><tr>
+          <th class="sortable" onclick="sortTable(this)">Document ${sortIcon}</th>
+          <th class="sortable" onclick="sortTable(this)">Signed Date ${sortIcon}</th>
+          <th class="sortable" onclick="sortTable(this)">Year ${sortIcon}</th>
+          <th class="sortable" onclick="sortTable(this)">Jurisdiction ${sortIcon}</th>
+          <th class="pay-td-docs"></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
 
 function buildDocumentsSectionHTML(activeTab = 'onboarding') {
   const today = new Date();
@@ -15345,6 +15436,9 @@ body.version-v1_1 .drawer-nav-item[data-section="scheduler"] { display: none; }
 body:not(.version-final) .drawer-nav-item[data-section="timeattendance"] { order: 1; }
 body:not(.version-final) .drawer-nav-item[data-section="awards"] { order: 2; }
 body:not(.version-final) .drawer-nav { display: flex; flex-direction: column; }
+/* V1 + Final: hide Documents nav item (its content moves into Onboarding and Pay) */
+body.version-v1 .drawer-nav-item[data-section="documents"],
+body.version-final .drawer-nav-item[data-section="documents"] { display: none; }
 </style>
 <script>
 let currentVersion = 'v1';
@@ -15377,6 +15471,11 @@ function setVersion(v) {
     if (v === 'v1_1' && activeNav.dataset.section === 'scheduler') {
       const jobNav = document.querySelector('.drawer-nav-item[data-section="job"]');
       if (jobNav) { switchDrawerSection(jobNav); return; }
+    }
+    // If V1/Final and active section was Documents (now hidden), fall back to Overview.
+    if (v !== 'v1_1' && activeNav.dataset.section === 'documents') {
+      const ovNav = document.querySelector('.drawer-nav-item[data-section="overview"]');
+      if (ovNav) { switchDrawerSection(ovNav); return; }
     }
     switchDrawerSection(activeNav);
   }
