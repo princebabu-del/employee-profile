@@ -6911,7 +6911,7 @@ select.cred-drawer-input option { color: var(--900); }
     </div>
     </div><!-- /.drawer-body-row -->
     <div class="drawer-content-footer">
-      <button class="btn" onclick="closeDrawer()">Cancel</button>
+      <button class="btn" onclick="cancelDrawerEdits()">Cancel</button>
       <button class="btn btn-primary" onclick="saveProfile()">Save</button>
     </div>
   </div><!-- /.drawer-content -->
@@ -7860,6 +7860,19 @@ function closeDrawer() {
   try { localStorage.removeItem('ep_drawer'); } catch(e) {}
 }
 
+function cancelDrawerEdits() {
+  const activeNav = document.querySelector('.drawer-nav-item.active');
+  if (activeNav) switchDrawerSection(activeNav);
+}
+
+function hideDrawerFooter() {
+  const footer = document.querySelector('.drawer-content-footer');
+  if (footer) footer.style.display = 'none';
+  // Re-arm so the footer reappears on the next edit
+  const body = document.getElementById('drawerSectionBody');
+  if (body) body.addEventListener('input', () => { if (footer) footer.style.display = ''; }, { once: true });
+}
+
 function closeDrawerOnOverlay(e) {
   if (e.target === document.getElementById('drawerOverlay')) closeDrawer();
 }
@@ -8046,7 +8059,7 @@ function saveJob() {
     document.getElementById('d-code').textContent = `#${r.code || 'EMP' + String(r.id).padStart(4,'0')}`;
   }
   toast('Job details saved');
-  closeDrawer();
+  hideDrawerFooter();
 }
 
 // ── Overview ──────────────────────────────────────────────────────────────
@@ -11598,23 +11611,15 @@ function buildTimeOffLeave() {
 
       ${currentVersion !== 'final' ? '' : `<div class="section">
         <div class="section-hd">
-          <div class="section-hd-text"><span class="pay-sh">Leave Requests <span class="pay-count-badge">2</span></span></div>
+          <div class="section-hd-text">
+            <span class="pay-sh">Leave Requests <span class="pay-count-badge">2</span></span>
+            <div class="pay-section-desc">Leaves are approved/rejected by the employee's managers.</div>
+          </div>
           <button class="btn" onclick="openCreateLeavePane()">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             Create Leave
           </button>
         </div>
-        <div class="field-grid" style="margin-bottom:20px;grid-template-columns:repeat(3,1fr);"><div>
-        <div class="to-approver-label">Leave Approver</div>
-        <div class="to-approver-field" style="margin-bottom:0;" onclick="toast('Edit approvers')">
-          <span class="to-tag">John Doe <span class="to-tag-x" onclick="event.stopPropagation();toast('Removed John Doe')">&#215;</span></span>
-          <span class="to-tag">Jane Doe <span class="to-tag-x" onclick="event.stopPropagation();toast('Removed Jane Doe')">&#215;</span></span>
-          <span class="to-tag-more">...</span>
-          <span class="to-approver-chevron">
-            <svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </div>
-        </div></div>
         <div class="pay-table-wrap" style="overflow-x:auto;">
           <table class="pay-table">
             <thead><tr>
@@ -11655,24 +11660,15 @@ function buildTimeOffLeave() {
 
       <div class="section">
         <div class="section-hd">
-          <div class="section-hd-text"><span class="pay-sh">Leave Policy Assignment <span class="pay-count-badge">${policies.length}</span></span></div>
+          <div class="section-hd-text">
+            <span class="pay-sh">Leave Policy Assignment <span class="pay-count-badge">${policies.length}</span></span>
+            ${currentVersion === 'final' ? '' : `<div class="pay-section-desc">Leaves are approved/rejected by the employee's managers.</div>`}
+          </div>
           <button class="btn" onclick="openAddLeavePolicyPane()">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             Add Policy
           </button>
         </div>
-        ${currentVersion === 'final' ? '' : `
-        <div class="field-grid" style="margin-bottom:20px;grid-template-columns:repeat(3,1fr);"><div>
-          <div class="to-approver-label">Leave Approver</div>
-          <div class="to-approver-field" style="margin-bottom:0;" onclick="toast('Edit approvers')">
-            <span class="to-tag">John Doe <span class="to-tag-x" onclick="event.stopPropagation();toast('Removed John Doe')">&#215;</span></span>
-            <span class="to-tag">Jane Doe <span class="to-tag-x" onclick="event.stopPropagation();toast('Removed Jane Doe')">&#215;</span></span>
-            <span class="to-tag-more">...</span>
-            <span class="to-approver-chevron">
-              <svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-          </div>
-        </div></div>`}
         <div class="pay-table-wrap">
         <table class="pay-table">
           <thead><tr>
@@ -12600,7 +12596,7 @@ function switchDrawerSection(el) {
     document.querySelector('.drawer-content-footer').style.display = 'none';
   } else if (section === 'profile') {
     body.innerHTML = buildProfileSectionHTML();
-    footer.innerHTML = `<button class="btn" onclick="closeDrawer()">Cancel</button>
+    footer.innerHTML = `<button class="btn" onclick="cancelDrawerEdits()">Cancel</button>
        <button class="btn btn-primary" onclick="saveProfile()">Save</button>`;
     footer.style.display = 'none';
     body.addEventListener('input', () => { footer.style.display = ''; }, { once: true });
@@ -12612,7 +12608,7 @@ function switchDrawerSection(el) {
     } else {
       body.innerHTML = buildJobSectionHTML();
     }
-    footer.innerHTML = `<button class="btn" onclick="closeDrawer()">Cancel</button>
+    footer.innerHTML = `<button class="btn" onclick="cancelDrawerEdits()">Cancel</button>
        <button class="btn btn-primary" onclick="saveJob()">Save</button>`;
     footer.style.display = 'none';
     body.addEventListener('input', () => { footer.style.display = ''; }, { once: true });
@@ -12646,8 +12642,8 @@ function switchDrawerSection(el) {
     document.querySelector('.drawer-content-footer').style.display = 'none';
   } else if (section === 'access') {
     body.innerHTML = buildAccessControlsSectionHTML();
-    footer.innerHTML = `<button class="btn" onclick="closeDrawer()">Cancel</button>
-       <button class="btn btn-primary" onclick="toast('Access & Controls saved')">Save</button>`;
+    footer.innerHTML = `<button class="btn" onclick="cancelDrawerEdits()">Cancel</button>
+       <button class="btn btn-primary" onclick="toast('Access & Controls saved');hideDrawerFooter()">Save</button>`;
     footer.style.display = 'none';
     body.addEventListener('input', () => { footer.style.display = ''; }, { once: true });
   } else {
@@ -12658,8 +12654,8 @@ function switchDrawerSection(el) {
       </svg>
       <p>${titles[section]} section is a placeholder in this prototype.</p>
     </div></div>`;
-    footer.innerHTML = `<button class="btn" onclick="closeDrawer()">Cancel</button>
-       <button class="btn btn-primary" onclick="toast('Saved')">Save</button>`;
+    footer.innerHTML = `<button class="btn" onclick="cancelDrawerEdits()">Cancel</button>
+       <button class="btn btn-primary" onclick="toast('Saved');hideDrawerFooter()">Save</button>`;
     footer.style.display = 'none';
     body.addEventListener('input', () => { footer.style.display = ''; }, { once: true });
   }
@@ -14940,7 +14936,7 @@ function saveProfile() {
     document.getElementById('d-avatar').textContent = initials.toUpperCase();
   }
   toast('Profile saved');
-  closeDrawer();
+  hideDrawerFooter();
 }
 
 // ── Toast ─────────────────────────────────────────────────────────────────
