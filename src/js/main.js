@@ -3217,27 +3217,22 @@ function buildAccessControlsSectionHTML() {
     <div class="ac-section-rule"></div>
     <div class="tax-toggle-row" style="border-top:none;">
       <label class="pay-sw">
-        <input type="checkbox" id="ac-sw-app" onchange="toast('Mobile clock-in ' + (this.checked ? 'disabled' : 'enabled'))" />
-        <span class="pay-sw-track"></span>
-      </label>
-      <div class="tax-toggle-body">
-        <div class="tax-toggle-title">Disable Clock In on the Lumber Mobile Application</div>
-        <div class="tax-toggle-desc">Disables the standard Clock In/Clock Out flow on the Lumber App. Employees will be required to use the "Request New Shift" option exclusively for submitting their time.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section ac-subsection">
-    <h3>User Login Controls</h3>
-    <div class="ac-section-rule"></div>
-    <div class="tax-toggle-row" style="border-top:none;">
-      <label class="pay-sw">
         <input type="checkbox" id="ac-sw-login" checked onchange="toast('Login access ' + (this.checked ? 'enabled' : 'disabled'))" />
         <span class="pay-sw-track"></span>
       </label>
       <div class="tax-toggle-body">
         <div class="tax-toggle-title">Allow Login to the Lumber Application</div>
         <div class="tax-toggle-desc">Allows the employee to login to the Lumber Application.</div>
+      </div>
+    </div>
+    <div class="tax-toggle-row" style="border-top:none;margin-top:24px;">
+      <label class="pay-sw">
+        <input type="checkbox" id="ac-sw-app" onchange="toast('Mobile clock-in ' + (this.checked ? 'disabled' : 'enabled'))" />
+        <span class="pay-sw-track"></span>
+      </label>
+      <div class="tax-toggle-body">
+        <div class="tax-toggle-title">Disable Clock In on the Lumber Mobile Application</div>
+        <div class="tax-toggle-desc">Disables the standard Clock In/Clock Out flow on the Lumber App. Employees will be required to use the "Request New Shift" option exclusively for submitting their time.</div>
       </div>
     </div>
   </div>
