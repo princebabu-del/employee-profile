@@ -14464,7 +14464,7 @@ function buildProfileSearchIndex() {
   // Benefits
   ['Benefits Assigned', 'Benefits Category'].forEach(h => heading(h, 'benefits', 'Benefits'));
   // Roles & Permissions (data-section="access" but labeled "Roles & Permissions" in the sidebar)
-  ['Roles & Permissions', 'Lumber Mobile Application Controls', 'User Login Controls', 'Kiosk Mode', 'Lumber ID'].forEach(h => heading(h, 'access', 'Roles & Permissions'));
+  ['Roles & Permissions', 'Lumber Mobile Application Controls', 'Kiosk Mode', 'Lumber ID'].forEach(h => heading(h, 'access', 'Roles & Permissions'));
   // Awards
   ['Achievements', 'Recognitions'].forEach(h => heading(h, 'awards', 'Awards'));
   // Onboarding
@@ -14557,7 +14557,7 @@ function buildProfileSearchIndex() {
 
   // Access & Controls
   field('Disable Clock In',        'Mobile Clock In',         'access', 'Roles & Permissions', 'Lumber Mobile Application Controls');
-  field('Allow Login',             'Lumber Application',      'access', 'Roles & Permissions', 'User Login Controls');
+  field('Allow Login',             'Lumber Application',      'access', 'Roles & Permissions', 'Lumber Mobile Application Controls');
   field('Kiosk Mode',              'PIN',                     'access', 'Roles & Permissions', 'Kiosk Mode');
   field('Generate PIN',            '',                        'access', 'Roles & Permissions', 'Kiosk Mode');
   field('Employee ID',             r.code,                    'access', 'Roles & Permissions', 'Lumber ID');
@@ -15049,21 +15049,17 @@ function buildAccessControlsSectionHTML() {
   <div class="section">
     <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">Lumber Mobile Application Controls</span></div></div>
     <div class="pr-toggle-inline">
-      <label class="pay-sw"><input type="checkbox" id="ac-sw-app" onchange="toast('Mobile clock-in ' + (this.checked ? 'disabled' : 'enabled'))"><span class="pay-sw-track"></span></label>
-      <div>
-        <div class="pay-toggle-label">Disable Clock In on the Lumber Mobile Application</div>
-        <div class="pay-toggle-desc">Disables the standard Clock In/Clock Out flow on the Lumber App. Employees will be required to use the "Request New Shift" option exclusively for submitting their time.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-hd"><div class="section-hd-text"><span class="pay-sh">User Login Controls</span></div></div>
-    <div class="pr-toggle-inline">
       <label class="pay-sw"><input type="checkbox" id="ac-sw-login" checked onchange="toast('Login access ' + (this.checked ? 'enabled' : 'disabled'))"><span class="pay-sw-track"></span></label>
       <div>
         <div class="pay-toggle-label">Allow Login to the Lumber Application</div>
         <div class="pay-toggle-desc">Allows the employee to login to the Lumber Application.</div>
+      </div>
+    </div>
+    <div class="pr-toggle-inline">
+      <label class="pay-sw"><input type="checkbox" id="ac-sw-app" onchange="toast('Mobile clock-in ' + (this.checked ? 'disabled' : 'enabled'))"><span class="pay-sw-track"></span></label>
+      <div>
+        <div class="pay-toggle-label">Disable Clock In on the Lumber Mobile Application</div>
+        <div class="pay-toggle-desc">Disables the standard Clock In/Clock Out flow on the Lumber App. Employees will be required to use the "Request New Shift" option exclusively for submitting their time.</div>
       </div>
     </div>
   </div>
