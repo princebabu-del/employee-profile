@@ -8346,15 +8346,7 @@ function buildOverviewSectionHTML() {
           <div class="ov-detail-item"><span class="ov-meta-label">Emergency Contact</span>${emgContact ? `<span class="ov-meta-value">${emgContact}</span>` : ovAddBtn('profile','Emergency Contact')}</div>
           <div class="ov-detail-item">
             <span class="ov-meta-label">SSN</span>
-            <div class="ov-ssn-row">
-              <span class="ov-meta-value ov-meta-masked" id="ov-ssn-val" data-last4="${ssnLast4}">XXX-XX-${ssnLast4}</span>
-              <button class="ov-ssn-toggle" onclick="toggleOverviewSsn()" title="Show / hide SSN">
-                <svg id="ov-ssn-eye" width="16" height="16" viewBox="0 0 20 20" fill="none">
-                  <path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z" stroke="currentColor" stroke-width="1.5"/>
-                  <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-              </button>
-            </div>
+            <span class="ov-meta-value ov-meta-masked" id="ov-ssn-val" data-last4="${ssnLast4}">XXX-XX-${ssnLast4}</span>
           </div>
           <div class="ov-detail-item"><span class="ov-meta-label">Job Title</span><span class="ov-meta-value">${title}</span></div>
           <div class="ov-detail-item"><span class="ov-meta-label">Employee Code</span><span class="ov-meta-value">${code}</span></div>
