@@ -4852,12 +4852,7 @@ select.cred-drawer-input option { color: var(--900); }
 }
 .ot-menu-btn:hover { background: var(--100); color: var(--700); }
 
-/* Clickable user name in onboarding table + hover popover */
-.ot-user-link {
-  color: inherit;
-  cursor: pointer;
-}
-.ot-user-link:hover { color: var(--blue); font-weight: 600; }
+/* User name in onboarding table + hover popover */
 .ot-user-popover {
   position: fixed;
   z-index: 9999;
@@ -4867,7 +4862,9 @@ select.cred-drawer-input option { color: var(--900); }
   box-shadow: 0 10px 24px rgba(16,24,40,0.12), 0 2px 6px rgba(16,24,40,0.06);
   padding: 20px;
   min-width: 280px;
-  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 .ot-user-popover-top { display: flex; align-items: center; gap: 12px; }
 .ot-user-popover-avatar {
@@ -4885,8 +4882,6 @@ select.cred-drawer-input option { color: var(--900); }
 .ot-user-popover-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .ot-user-popover-name { font-size: 16px; font-weight: 600; color: var(--900); }
 .ot-user-popover-meta { font-size: 14px; font-weight: 400; color: var(--500); }
-.ot-user-popover-divider { height: 1px; background: var(--150); margin: 16px 0; }
-.ot-user-popover-bottom { font-size: 14px; font-weight: 400; color: var(--500); }
 
 /* ── Documents Section ─────────────────────────────────────────────────── */
 .doc-wrap {
@@ -12741,8 +12736,11 @@ const ONBOARDING_USERS = {
   'John Doe':         { id: 'EMP-1099', jobTitle: 'Operations Lead',       managedBy: 'David Success', initials: 'JD' },
 };
 
+let _onbUserPopoverHideTimer = null;
 function showOnboardingUserPopover(el, name) {
-  hideOnboardingUserPopover();
+  clearTimeout(_onbUserPopoverHideTimer);
+  const existing = document.getElementById('onboardingUserPopover');
+  if (existing) existing.remove();
   const u = ONBOARDING_USERS[name];
   if (!u) return;
   const pop = document.createElement('div');
@@ -12756,16 +12754,20 @@ function showOnboardingUserPopover(el, name) {
         <div class="ot-user-popover-meta">${u.id} · ${u.jobTitle}</div>
       </div>
     </div>
-    <div class="ot-user-popover-divider"></div>
-    <div class="ot-user-popover-bottom">Managed by ${u.managedBy}</div>`;
+    <button class="btn" onclick="toast('View profile: ${name}')">View profile</button>`;
+  pop.addEventListener('mouseenter', () => clearTimeout(_onbUserPopoverHideTimer));
+  pop.addEventListener('mouseleave', hideOnboardingUserPopover);
   document.body.appendChild(pop);
   const rect = el.getBoundingClientRect();
   pop.style.top = (rect.bottom + 6) + 'px';
   pop.style.left = rect.left + 'px';
 }
 function hideOnboardingUserPopover() {
-  const p = document.getElementById('onboardingUserPopover');
-  if (p) p.remove();
+  clearTimeout(_onbUserPopoverHideTimer);
+  _onbUserPopoverHideTimer = setTimeout(() => {
+    const p = document.getElementById('onboardingUserPopover');
+    if (p) p.remove();
+  }, 120);
 }
 
 const ONBOARDING_TASKS_DATA = [
