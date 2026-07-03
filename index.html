@@ -4852,6 +4852,21 @@ select.cred-drawer-input option { color: var(--900); }
 }
 .ot-menu-btn:hover { background: var(--100); color: var(--700); }
 
+/* User cell (avatar + name) in onboarding table */
+.ot-user-cell { display: inline-flex; align-items: center; gap: 8px; }
+.ot-user-avatar {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2d4a35 0%, #1a3022 100%);
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 /* User name in onboarding table + hover popover */
 .ot-user-popover {
   position: fixed;
@@ -12793,7 +12808,7 @@ const OT_STATUS_CLASS = {
 function buildOnboardingTasksSectionHTML() {
   const rows = ONBOARDING_TASKS_DATA.map(t => `
     <tr class="ot-row">
-      <td class="ot-td"><span class="ot-user-link" onmouseenter="showOnboardingUserPopover(this, '${t.assignee}')" onmouseleave="hideOnboardingUserPopover()">${t.assignee}</span></td>
+      <td class="ot-td"><span class="ot-user-cell" onmouseenter="showOnboardingUserPopover(this, '${t.assignee}')" onmouseleave="hideOnboardingUserPopover()"><span class="ot-user-avatar">${(ONBOARDING_USERS[t.assignee]||{}).initials||''}</span><span class="ot-user-link">${t.assignee}</span></span></td>
       <td class="ot-td">
         <div class="ot-td-template">
           <span class="ot-icon">${OT_ICONS[t.icon]}</span>
@@ -12802,14 +12817,14 @@ function buildOnboardingTasksSectionHTML() {
       </td>
       <td class="ot-td">${t.dueDate}</td>
       <td class="ot-td">${t.completionDate}</td>
-      <td class="ot-td"><span class="ot-user-link" onmouseenter="showOnboardingUserPopover(this, '${t.assignedBy}')" onmouseleave="hideOnboardingUserPopover()">${t.assignedBy}</span></td>
+      <td class="ot-td"><span class="ot-user-cell" onmouseenter="showOnboardingUserPopover(this, '${t.assignedBy}')" onmouseleave="hideOnboardingUserPopover()"><span class="ot-user-avatar">${(ONBOARDING_USERS[t.assignedBy]||{}).initials||''}</span><span class="ot-user-link">${t.assignedBy}</span></span></td>
       <td class="ot-td">${t.assignedDate}</td>
       <td class="ot-td">
         <span class="ot-badge ${OT_STATUS_CLASS[t.status]}">${t.status}</span>
       </td>
       <td class="ot-td pay-td-kebab">
-        <button class="ot-menu-btn" onclick="toggleOnboardingTaskKebab(event, '${t.status}')">
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="4.5" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="15.5" r="1.5"/></svg>
+        <button class="ot-menu-btn" onclick="toggleOnboardingTaskKebab(event, '${t.status}')" style="color:var(--500);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="4.5" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="15.5" r="1.5"/></svg>
         </button>
       </td>
     </tr>`).join('');
