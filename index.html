@@ -5121,15 +5121,19 @@ select.cred-drawer-input option { color: var(--900); }
 .ov-quick-actions {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  gap: 1px;
+  background: var(--200);
+  border: 1px solid var(--200);
+  border-radius: 8px;
+  overflow: hidden;
 }
 .ov-qa-card {
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 20px;
-  border: 1px solid var(--200);
-  border-radius: 8px;
+  border: none;
+  border-radius: 0;
   background: var(--white);
   cursor: pointer;
   transition: background 0.12s;
