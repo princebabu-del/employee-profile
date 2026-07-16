@@ -6815,6 +6815,10 @@ select.cred-drawer-input option { color: var(--900); }
         Awards
       </div>
     </nav>
+    <div class="drawer-nav-footer" id="customizeFieldsBtn" onclick="openCustomizeFields()">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 6h9M15 6h2M3 14h5M11 14h6M12 4v4M8 12v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>Customize</span>
+    </div>
   </div>
 
   <div class="drawer-content">
@@ -15480,10 +15484,6 @@ try {
     <span class="version-switcher-title">Final</span>
     <span class="version-switcher-desc">Additional features</span>
   </button>
-  <button id="customizeFieldsBtn" class="version-switcher-btn version-switcher-btn--customize" onclick="openCustomizeFields()">
-    <svg width="15" height="15" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;"><path d="M3 6h9M15 6h2M3 14h5M11 14h6M12 4v4M8 12v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-    <span class="version-switcher-title">Customize</span>
-  </button>
 </div>
 <!-- ── Customize Fields Modal ─────────────────────────────────────────────── -->
 <div class="modal-overlay" id="customizeFieldsModal" onclick="closeCustomizeFieldsOnOverlay(event)">
@@ -15544,17 +15544,20 @@ body:not(.version-final) .drawer-nav { display: flex; flex-direction: column; }
 body.version-v1 .drawer-nav-item[data-section="documents"],
 body.version-final .drawer-nav-item[data-section="documents"] { display: none; }
 
-/* Customize button — only in Final version */
-#customizeFieldsBtn { display: none; }
-body.version-final #customizeFieldsBtn { display: flex; }
-.version-switcher-btn--customize {
-  flex-direction: row; align-items: center; gap: 8px;
-  margin-top: 2px; padding-top: 10px;
-  border: none; border-top: 1px solid var(--gray-border); border-radius: 0;
-  color: var(--700);
+/* Customize footer in the profile drawer sidebar — only in Final version */
+.drawer-nav-footer { display: none; }
+body.version-final .drawer-nav-footer {
+  display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+  margin: 0 12px; padding: 14px 12px;
+  border-top: 1px solid var(--150);
+  font-size: 14px; font-weight: 600; color: var(--800);
+  letter-spacing: 0.08px; cursor: pointer;
+  transition: color 0.15s;
 }
-.version-switcher-btn--customize:hover { color: var(--blue); }
-.version-switcher-btn--customize .version-switcher-title { color: inherit; }
+.drawer-nav-footer svg { color: var(--500); transition: color 0.15s; flex-shrink: 0; }
+.drawer-nav-footer:hover { color: var(--blue); }
+.drawer-nav-footer:hover svg { color: var(--blue); }
 
 /* ── Customize Fields modal ─────────────────────────────────────────────── */
 #customizeFieldsModal .modal-body { gap: 24px; }
