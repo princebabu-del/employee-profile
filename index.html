@@ -2588,6 +2588,14 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
 .section-hd-action { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
 .section-hd-text .pay-sh { margin-bottom: 0; }
 .pay-section-desc { font-size: 14px; font-weight: 400; color: var(--500); line-height: 1.5; }
+/* Withholding forms list (Tax Information, Final version) */
+.wf-subtitle { font-size: 15px; font-weight: 400; color: var(--500); }
+.wf-list { display: flex; flex-direction: column; border-top: 1px solid var(--150); }
+.wf-row { display: flex; align-items: center; gap: 16px; width: 100%; padding: 24px 4px; background: none; border: none; border-bottom: 1px solid var(--150); cursor: pointer; text-align: left; font: inherit; }
+.wf-row:hover { background: var(--50); }
+.wf-row-icon { flex-shrink: 0; color: var(--400); display: inline-flex; }
+.wf-row-name { flex: 1; font-size: 16px; font-weight: 400; color: var(--800); }
+.wf-row-chevron { flex-shrink: 0; color: var(--400); display: inline-flex; }
 .section-ftr { margin-top: 20px; display: flex; gap: 16px; }
 .pay-empty-state { padding: 56px 24px !important; text-align: center; background: var(--white); color: var(--500); font-size: 14px; }
 .pr-field-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
@@ -11440,6 +11448,26 @@ function buildPayTaxInfo() {
         <div class="pay-toggle-desc">Enables automatic assignment of an existing workplace that matches the project's state.</div>
       </div>
     </div>
+  </div>
+  ${currentVersion === 'final' ? buildWithholdingFormsSection() : ''}`;
+}
+
+function buildWithholdingFormsSection() {
+  const forms = ['Federal W-4', 'California DE-4', 'Ohio IT 4', 'Oregon OR-W-4'];
+  const docIco = `<svg class="wf-row-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12h6M9 15h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  const chevron = `<svg class="wf-row-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const rows = forms.map(f =>
+    `<button class="wf-row" onclick="toast('Opening ${f.replace(/'/g, "\\'")}')">${docIco}<span class="wf-row-name">${f}</span>${chevron}</button>`
+  ).join('');
+  return `
+  <div class="section">
+    <div class="section-hd">
+      <div class="section-hd-text">
+        <span class="pay-sh">Withholding forms</span>
+        <span class="wf-subtitle">Please complete the following payroll forms.</span>
+      </div>
+    </div>
+    <div class="wf-list">${rows}</div>
   </div>`;
 }
 
