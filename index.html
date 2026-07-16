@@ -2471,7 +2471,7 @@ select.field-input:disabled { opacity: 1; color: var(--black); background: var(-
 .pay-status-off { font-size: 12px; font-weight: 500; color: var(--400); }
 
 /* ── Payment Method (pm) ─────────────────────────────────── */
-.pm-pref-title { font-size: 16px; font-weight: 600; color: var(--900); margin-bottom: 16px; }
+.pm-pref-title { font-size: 20px; font-weight: 600; line-height: 32px; color: var(--900); margin-bottom: 24px; }
 .pm-pref-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .pm-pref-card {
   display: flex; align-items: center; gap: 16px;
@@ -13171,11 +13171,11 @@ function buildPaymentMethod() {
     <div class="section-hd">
       <div class="section-hd-text"><span class="pay-sh">Paycheck Split</span></div>
       <div class="section-hd-action">
-        <button class="field-helper-link" style="display:inline-flex;align-items:center;gap:4px;" onclick="toast('Paycheck Split')">Paycheck Split ${chevron}</button>
+        <button class="btn-link" style="display:inline-flex;align-items:center;gap:4px;" onclick="toast('Paycheck Split')">Paycheck Split ${chevron}</button>
       </div>
     </div>
     <div class="pm-accounts-card">${acctRows}</div>
-    <button class="field-helper-link pm-add-btn" onclick="toast('Add Bank Account')">${plusIcon}Add Bank Account</button>
+    <button class="btn-link pm-add-btn" onclick="toast('Add Bank Account')">${plusIcon}Add Bank Account</button>
   </div>`;
 }
 
