@@ -15560,6 +15560,8 @@ body.version-final .drawer-nav-footer {
 .drawer-nav-footer:hover svg { color: var(--blue); }
 
 /* ── Customize Fields modal ─────────────────────────────────────────────── */
+/* Entry point is the EE profile drawer (z-index 260), so open above it. */
+#customizeFieldsModal { z-index: 500; }
 #customizeFieldsModal .modal-body { gap: 24px; }
 .cf-intro-title { font-size: 15px; font-weight: 600; color: var(--900); }
 .cf-intro-sub { font-size: 13px; font-weight: 400; color: var(--500); margin-top: 2px; }
