@@ -15497,12 +15497,12 @@ try {
       </button>
     </div>
     <div class="modal-body">
-      <div class="cf-intro-sub">All fields are shown by default. Uncheck any fields you want to hide from employee profiles. Changes apply to all employee profiles in your company. You can update these settings anytime from the Customize option in the employee profile sidebar.</div>
+      <div class="cf-intro-sub">All fields are shown by default. Uncheck any fields you want to hide from employee profiles. Changes apply to all employee profiles in your company. You can update these settings anytime from the <span class="cf-emph">Customize</span> option in the employee profile sidebar.</div>
       <div class="cf-tabs" id="customizeFieldsBody"></div>
     </div>
     <div class="modal-footer">
       <button class="btn" onclick="closeCustomizeFields()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveCustomizeFields()">Save</button>
+      <button class="btn btn-primary" id="cfSaveBtn" onclick="saveCustomizeFields()" disabled>Save</button>
     </div>
   </div>
 </div>
@@ -15561,7 +15561,8 @@ body.version-final .drawer-nav-footer {
 #customizeFieldsModal { z-index: 500; }
 #customizeFieldsModal .modal-body { gap: 24px; }
 .cf-intro-title { font-size: 15px; font-weight: 600; color: var(--900); }
-.cf-intro-sub { font-size: 13px; font-weight: 400; color: var(--500); margin-top: 2px; }
+.cf-intro-sub { font-size: 13px; font-weight: 400; color: var(--500); }
+.cf-emph { color: var(--900); font-weight: 600; }
 .cf-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 @media (max-width: 560px) { .cf-tabs { grid-template-columns: 1fr; } }
 .cf-tab-title {
@@ -15648,7 +15649,7 @@ function cfGroupsHTML(scope, groups) {
       ${g.fields.map(f => {
         const key = scope + '::' + f;
         const checked = hiddenProfileJobFields.has(key) ? '' : 'checked';
-        return `<label class="cf-row"><input type="checkbox" data-fkey="${key}" ${checked}><span>${f}</span></label>`;
+        return `<label class="cf-row"><input type="checkbox" data-fkey="${key}" ${checked} onchange="cfUpdateSaveState()"><span>${f}</span></label>`;
       }).join('')}
     </div>`).join('');
 }
@@ -15660,7 +15661,19 @@ function openCustomizeFields() {
       `<div class="cf-tabcol">${cfGroupsHTML('profile', CF_PROFILE_GROUPS)}</div>` +
       `<div class="cf-tabcol">${cfGroupsHTML('job', CF_JOB_GROUPS)}</div>`;
   }
+  cfUpdateSaveState();
   document.getElementById('customizeFieldsModal').classList.add('open');
+}
+
+// Enable Save only when the current selection differs from the saved state.
+function cfUpdateSaveState() {
+  const btn = document.getElementById('cfSaveBtn');
+  if (!btn) return;
+  let changed = false;
+  document.querySelectorAll('#customizeFieldsBody input[data-fkey]').forEach(box => {
+    if ((!box.checked) !== hiddenProfileJobFields.has(box.dataset.fkey)) changed = true;
+  });
+  btn.disabled = !changed;
 }
 function closeCustomizeFields() {
   document.getElementById('customizeFieldsModal').classList.remove('open');
