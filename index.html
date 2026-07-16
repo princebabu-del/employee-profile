@@ -15497,10 +15497,7 @@ try {
       </button>
     </div>
     <div class="modal-body">
-      <div>
-        <div class="cf-intro-title">Show these fields in the profile drawer</div>
-        <div class="cf-intro-sub">Unchecked fields are hidden from the Profile and Job tabs.</div>
-      </div>
+      <div class="cf-intro-sub">All fields are shown by default. Uncheck any fields you want to hide from employee profiles. Changes apply to all employee profiles in your company. You can update these settings anytime from the Customize option in the employee profile sidebar.</div>
       <div class="cf-tabs" id="customizeFieldsBody"></div>
     </div>
     <div class="modal-footer">
@@ -15660,8 +15657,8 @@ function openCustomizeFields() {
   const body = document.getElementById('customizeFieldsBody');
   if (body) {
     body.innerHTML =
-      `<div class="cf-tabcol"><div class="cf-tab-title">Profile</div>${cfGroupsHTML('profile', CF_PROFILE_GROUPS)}</div>` +
-      `<div class="cf-tabcol"><div class="cf-tab-title">Job</div>${cfGroupsHTML('job', CF_JOB_GROUPS)}</div>`;
+      `<div class="cf-tabcol">${cfGroupsHTML('profile', CF_PROFILE_GROUPS)}</div>` +
+      `<div class="cf-tabcol">${cfGroupsHTML('job', CF_JOB_GROUPS)}</div>`;
   }
   document.getElementById('customizeFieldsModal').classList.add('open');
 }
