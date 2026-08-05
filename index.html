@@ -63,6 +63,15 @@ body {
   z-index: 100;
   gap: 4px;
 }
+/* Topbar (topbar.tsx) mount: contain the tsx's internal z-index:1100 in its own
+   stacking context and pin the whole bar at z-index 100 (the old header's level),
+   so the profile drawer (z-index 260) and its modals/panes layer above it. */
+#topbar-root {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  isolation: isolate;
+}
 
 .nav-logo {
   display: flex;
