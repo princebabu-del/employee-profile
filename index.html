@@ -12697,6 +12697,7 @@ function switchDrawerSection(el) {
   } else {
     subnavBar.innerHTML = '';
   }
+  applySubTabVisibility();
   const footer = document.querySelector('.drawer-content-footer');
   footer.style.display = '';
   const body = document.getElementById('drawerSectionBody');
@@ -15545,6 +15546,16 @@ try {
 </script>
 <div id="thFloatTip"></div>
 
+<!-- ── Review Controls (internal — Customize + Version) ───────────────────── -->
+<div class="review-controls">
+<!-- ── Customize Tabs control (show/hide tabs for demos) ──────────────────── -->
+<div id="tabCustomizeControl" class="tab-customize-control" onclick="openTabCustomize()">
+  <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 6h9M15 6h2M3 14h5M11 14h6M12 4v4M8 12v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  <div class="tab-customize-text">
+    <span class="tab-customize-title">Customize</span>
+    <span class="tab-customize-desc">Show / hide tabs</span>
+  </div>
+</div>
 <!-- ── Version Switcher (internal review) ─────────────────────────────────── -->
 <div id="versionSwitcher" class="version-switcher">
   <div class="version-switcher-label">Version</div>
@@ -15560,6 +15571,31 @@ try {
     <span class="version-switcher-title">Final</span>
     <span class="version-switcher-desc">Additional features</span>
   </button>
+</div>
+</div>
+<!-- ── Customize Tabs Modal ───────────────────────────────────────────────── -->
+<div class="modal-overlay" id="tabCustomizeModal" onclick="closeTabCustomizeOnOverlay(event)">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <span class="modal-title">Customize Tabs</span>
+      <button class="modal-close" onclick="closeTabCustomize()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M14 4L4 14M4 4l10 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="tc-intro-sub">Uncheck any tab or sub-tab you want to hide from the employee profile sidebar. Use this to tailor the view for customer calls.</div>
+      <div class="tc-list" id="tabCustomizeBody"></div>
+    </div>
+    <div class="modal-footer" style="justify-content:space-between;">
+      <button class="btn" onclick="resetTabCustomize()">Show all</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" onclick="closeTabCustomize()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveTabCustomize()">Apply</button>
+      </div>
+    </div>
+  </div>
 </div>
 <!-- ── Customize Fields Modal ─────────────────────────────────────────────── -->
 <div class="modal-overlay" id="customizeFieldsModal" onclick="closeCustomizeFieldsOnOverlay(event)">
@@ -15584,12 +15620,50 @@ try {
 </div>
 
 <style>
-.version-switcher {
+.review-controls {
   position: fixed; left: 16px; bottom: 16px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.version-switcher {
   display: flex; flex-direction: column; gap: 6px;
   background: var(--white); border: 1px solid var(--gray-border);
   border-radius: 10px; padding: 8px; box-shadow: 0 4px 12px rgba(16,24,40,.08);
 }
+/* ── Customize Tabs control ─────────────────────────────────────────────── */
+.tab-customize-control {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--white); border: 1px solid var(--gray-border);
+  border-radius: 10px; padding: 10px 14px; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16,24,40,.08);
+  color: var(--800); transition: border-color .15s, color .15s;
+}
+.tab-customize-control svg { color: var(--500); flex-shrink: 0; transition: color .15s; }
+.tab-customize-control:hover { border-color: var(--blue); color: var(--blue); }
+.tab-customize-control:hover svg { color: var(--blue); }
+.tab-customize-text { display: flex; flex-direction: column; gap: 1px; }
+.tab-customize-title { font: 600 13px/1.2 inherit; }
+.tab-customize-desc { font: 500 11px/1.3 inherit; color: var(--500); }
+/* ── Customize Tabs modal ───────────────────────────────────────────────── */
+#tabCustomizeModal { z-index: 500; }
+#tabCustomizeModal .modal-body { gap: 20px; padding: 24px; }
+.tc-intro-sub { font-size: 13px; font-weight: 400; color: var(--500); }
+.tc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 32px; }
+@media (max-width: 560px) { .tc-list { grid-template-columns: 1fr; } }
+.tc-tab { break-inside: avoid; }
+.tc-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 4px; border-radius: 6px; cursor: pointer;
+  font-size: 14px; font-weight: 600; color: var(--900);
+}
+.tc-row:hover { background: var(--50); }
+.tc-sub-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 3px 4px 3px 26px; border-radius: 6px; cursor: pointer;
+  font-size: 13px; font-weight: 400; color: var(--700);
+}
+.tc-sub-row:hover { background: var(--50); }
+.tc-row.tc-disabled, .tc-sub-row.tc-disabled { opacity: .45; cursor: not-allowed; }
+.tc-list input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
 .version-switcher-label {
   font-size: 11px; font-weight: 600; text-transform: uppercase;
   letter-spacing: .04em; color: var(--500); padding: 2px 4px 2px;
@@ -15695,6 +15769,110 @@ function setVersion(v) {
     switchDrawerSection(activeNav);
   }
 }
+
+/* ── Customize Tabs (show/hide sidebar tabs & sub-tabs for demos) ────────── */
+const CUSTOMIZE_TABS = [
+  { key:'overview', label:'Overview' },
+  { key:'profile',  label:'Profile' },
+  { key:'job',      label:'Job', subs:[['general','General'],['workallocation','Work Allocation'],['managerreports','Manager & Reports']] },
+  { key:'timeattendance', label:'Time & Attendance', subs:[['timesheet','Timesheet'],['exceptions','Attendance Exceptions']] },
+  { key:'timeoff',  label:'Time Off', subs:[['leave','Leave'],['holiday','Holiday']] },
+  { key:'pay',      label:'Pay', subs:[['overview','Overview'],['payrates','Pay Rates'],['deductions','Deductions'],['reimbursements','Reimbursements'],['taxinfo','Tax Information'],['paystubs','Paystubs'],['paymentmethod','Payment Method'],['documents','Documents']] },
+  { key:'benefits', label:'Benefits' },
+  { key:'scheduler',label:'Scheduler', subs:[['projects','Projects'],['costcodes','Cost Codes']] },
+  { key:'credentials', label:'Credentials' },
+  { key:'assignments', label:'Onboarding' },
+  { key:'documents', label:'Documents', subs:[['onboarding','Onboarding'],['payroll','Payroll']] },
+  { key:'access',   label:'Roles & Permissions' },
+  { key:'awards',   label:'Awards' },
+];
+let hiddenTabs = new Set();          // section keys hidden
+let hiddenSubTabs = new Set();       // "section:subid" hidden
+
+// Hide/show sidebar nav items and any visible sub-tab buttons.
+function applyTabVisibility() {
+  CUSTOMIZE_TABS.forEach(t => {
+    const el = document.querySelector(`.drawer-nav-item[data-section="${t.key}"]`);
+    if (el) el.style.display = hiddenTabs.has(t.key) ? 'none' : '';
+  });
+  applySubTabVisibility();
+}
+// Hide/show sub-tab buttons for the currently-rendered section.
+function applySubTabVisibility() {
+  const bar = document.getElementById('drawer-subnav-bar');
+  if (!bar) return;
+  const active = document.querySelector('.drawer-nav-item.active');
+  const section = active ? active.dataset.section : null;
+  if (!section) return;
+  bar.querySelectorAll('button[data-tab]').forEach(btn => {
+    btn.style.display = hiddenSubTabs.has(section + ':' + btn.dataset.tab) ? 'none' : '';
+  });
+}
+
+function openTabCustomize() {
+  renderTabCustomizeBody();
+  document.getElementById('tabCustomizeModal').classList.add('open');
+}
+function closeTabCustomize() {
+  document.getElementById('tabCustomizeModal').classList.remove('open');
+}
+function closeTabCustomizeOnOverlay(e) {
+  if (e.target === e.currentTarget) closeTabCustomize();
+}
+
+function renderTabCustomizeBody() {
+  const body = document.getElementById('tabCustomizeBody');
+  body.innerHTML = CUSTOMIZE_TABS.map(t => {
+    const tabOn = !hiddenTabs.has(t.key);
+    const subs = (t.subs || []).map(([id, label]) => {
+      const subOn = tabOn && !hiddenSubTabs.has(t.key + ':' + id);
+      return `<label class="tc-sub-row${tabOn ? '' : ' tc-disabled'}">
+        <input type="checkbox" ${subOn ? 'checked' : ''} ${tabOn ? '' : 'disabled'}
+          onchange="onSubTabToggle('${t.key}','${id}', this.checked)">
+        <span>${label}</span>
+      </label>`;
+    }).join('');
+    return `<div class="tc-tab">
+      <label class="tc-row">
+        <input type="checkbox" ${tabOn ? 'checked' : ''} onchange="onTabToggle('${t.key}', this.checked)">
+        <span>${t.label}</span>
+      </label>
+      ${subs}
+    </div>`;
+  }).join('');
+}
+
+function onTabToggle(key, checked) {
+  if (checked) hiddenTabs.delete(key);
+  else hiddenTabs.add(key);
+  renderTabCustomizeBody();   // re-render so sub-tabs enable/disable with the tab
+}
+function onSubTabToggle(key, id, checked) {
+  const k = key + ':' + id;
+  if (checked) hiddenSubTabs.delete(k);
+  else hiddenSubTabs.add(k);
+}
+
+function saveTabCustomize() {
+  applyTabVisibility();
+  // If the active section was just hidden, fall back to the first visible tab.
+  const active = document.querySelector('.drawer-nav-item.active');
+  if (active && hiddenTabs.has(active.dataset.section)) {
+    const firstVisible = CUSTOMIZE_TABS.map(t =>
+      document.querySelector(`.drawer-nav-item[data-section="${t.key}"]`))
+      .find(el => el && el.style.display !== 'none' && getComputedStyle(el).display !== 'none');
+    if (firstVisible) switchDrawerSection(firstVisible);
+  }
+  closeTabCustomize();
+  toast('Tab visibility updated');
+}
+function resetTabCustomize() {
+  hiddenTabs.clear();
+  hiddenSubTabs.clear();
+  renderTabCustomizeBody();
+  applyTabVisibility();
+}
+
 document.body.classList.add('version-v1');
 document.addEventListener('DOMContentLoaded', () => {
   const taLabel = document.getElementById('navLabel-timeattendance');
