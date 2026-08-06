@@ -16131,7 +16131,7 @@ function buildJobManagerReportsV2HTML() {
 <script type="text/plain" id="topbar-tsx-src">
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   Box,
@@ -16139,8 +16139,6 @@ import {
   Menu,
   MenuItem,
   Typography,
-  useTheme,
-  useMediaQuery,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -16417,12 +16415,6 @@ const ALL_MENU_ITEMS: NavItem[] = [
       { condition: true, link: 'payroll', title: 'Payroll reports' },
       { condition: true, link: 'hris', title: 'HRIS reports' },
     ],
-  },
-  {
-    condition: true,
-    link: 'messaging',
-    title: 'Messages',
-    icon: false,
   },
   {
     condition: true,
@@ -16731,11 +16723,6 @@ const NavbarMenuOverflowItem = ({ item, handleClickNavbarItem }: NavbarMenuOverf
 };
 
 const Topbar = () => {
-  const theme = useTheme();
-  const isXlUp = useMediaQuery(theme.breakpoints.up('xl'));
-  const isLgUp = useMediaQuery(theme.breakpoints.up('lg'));
-  const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
-
   const [selectedApp, setSelectedApp] = useState('timesheet');
   const [selectedChildApp, setSelectedChildApp] = useState('weekly');
 
@@ -16745,18 +16732,67 @@ const Topbar = () => {
   const openUserMenu = Boolean(userMenu);
   const openOverflowMenu = Boolean(overflowAnchor);
 
-  const PRIMARY_COUNT = isXlUp
-    ? ALL_MENU_ITEMS.length
-    : isLgUp
-    ? 5
-    : isMdUp
-    ? 3
-    : 2;
+  // Responsive "priority+" nav: measure every item's natural width once, then
+  // fit as many as the available space allows and push the rest into "More".
+  const navAreaRef = useRef<HTMLDivElement | null>(null);
+  const measurerRef = useRef<HTMLDivElement | null>(null);
+  const itemWidthsRef = useRef<number[]>([]);
+  const moreWidthRef = useRef<number>(0);
+  const [primaryCount, setPrimaryCount] = useState(ALL_MENU_ITEMS.length);
 
-  const visibleMenuItems = ALL_MENU_ITEMS.slice(0, PRIMARY_COUNT);
+  const ITEM_MARGIN = 16; // Styles.app mr: 2 → 16px right margin per item
+
+  const recomputeFit = useCallback(() => {
+    const navEl = navAreaRef.current;
+    const widths = itemWidthsRef.current;
+    if (!navEl || widths.length === 0) return;
+    const available = navEl.clientWidth;
+    const totalAll = widths.reduce((sum, w) => sum + w, 0);
+    if (totalAll <= available) {
+      setPrimaryCount(widths.length);
+      return;
+    }
+    const reserve = moreWidthRef.current + ITEM_MARGIN; // room for the More button
+    let used = 0;
+    let count = 0;
+    for (let i = 0; i < widths.length; i++) {
+      if (used + widths[i] + reserve <= available) {
+        used += widths[i];
+        count++;
+      } else {
+        break;
+      }
+    }
+    setPrimaryCount(count);
+  }, []);
+
+  useLayoutEffect(() => {
+    const m = measurerRef.current;
+    if (m) {
+      const kids = Array.from(m.querySelectorAll('[data-measure-item]'));
+      itemWidthsRef.current = kids.map((k) => k.getBoundingClientRect().width + ITEM_MARGIN);
+      const moreEl = m.querySelector('[data-measure-more]');
+      moreWidthRef.current = moreEl ? moreEl.getBoundingClientRect().width : 96;
+    }
+    recomputeFit();
+  }, [recomputeFit]);
+
+  useEffect(() => {
+    const navEl = navAreaRef.current;
+    if (!navEl) return;
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', recomputeFit);
+      return () => window.removeEventListener('resize', recomputeFit);
+    }
+    const ro = new ResizeObserver(() => recomputeFit());
+    ro.observe(navEl);
+    return () => ro.disconnect();
+  }, [recomputeFit]);
+
+  const visibleMenuItems = ALL_MENU_ITEMS.slice(0, primaryCount);
 
   const overflowMenuItems = useMemo(() => {
-    const raw = ALL_MENU_ITEMS.slice(PRIMARY_COUNT);
+    const raw = ALL_MENU_ITEMS.slice(primaryCount);
     return raw.flatMap((item) => {
       if (item.link !== 'hr' || !item.subMenuItems?.length) return [item];
       const complianceSubs = item.subMenuItems.filter(
@@ -16779,7 +16815,7 @@ const Topbar = () => {
       );
       return result;
     });
-  }, [PRIMARY_COUNT]);
+  }, [primaryCount]);
 
   const handleNavigate = useCallback((path: string) => {
     const parts = path.replace(/^\//, '').split('/');
@@ -16818,10 +16854,10 @@ const Topbar = () => {
       <Box height="100%" width="100%" display="flex" alignItems="center" justifyContent="space-between">
 
         {/* Left */}
-        <Box display="flex" alignItems="center">
+        <Box display="flex" alignItems="center" sx={{ flex: '1 1 auto', minWidth: 0 }}>
           <Box
             onClick={() => handleNavigate('/')}
-            sx={{ cursor: 'pointer', mr: 1, display: 'flex', alignItems: 'center', gap: '10px' }}
+            sx={{ cursor: 'pointer', mr: 1, display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}
           >
             <LumberIcon />
             <Typography
@@ -16839,7 +16875,54 @@ const Topbar = () => {
             </Typography>
           </Box>
 
-          <Box sx={{ p: 1.5, ml: 1 }} display="flex">
+          <Box
+            ref={navAreaRef}
+            sx={{
+              p: 1.5,
+              ml: 1,
+              flex: '1 1 auto',
+              minWidth: 0,
+              display: 'flex',
+              alignItems: 'center',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Hidden measurer: all items at natural width, drives the fit calc */}
+            <Box
+              ref={measurerRef}
+              aria-hidden
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'nowrap',
+                visibility: 'hidden',
+                pointerEvents: 'none',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {ALL_MENU_ITEMS.map((item) => {
+                const hasChildren = Boolean(item.subMenuItems && item.subMenuItems.length > 0);
+                return (
+                  <Box key={item.title} data-measure-item sx={Styles.app}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box>{item.title}</Box>
+                      {hasChildren && (
+                        <KeyboardArrowDownIcon sx={{ pl: 1, fontSize: '20px', boxSizing: 'content-box' }} />
+                      )}
+                    </Box>
+                  </Box>
+                );
+              })}
+              <Box data-measure-more sx={Styles.overflowMenuButton}>
+                <Typography>More</Typography>
+                <KeyboardArrowDownIcon sx={{ fontSize: '20px' }} />
+              </Box>
+            </Box>
+
             {visibleMenuItems.map((item) => (
               <NavbarItem
                 key={item.title}
