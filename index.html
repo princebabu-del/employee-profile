@@ -8358,7 +8358,7 @@ function buildOverviewSectionHTML() {
     <!-- ── Right 5 cols ── -->
     <div class="ov-sidebar">
       <div class="ov-section">
-        <h3 class="ov-section-title">Basic Information</h3>
+        <h3 class="ov-section-title">General Details</h3>
         <div class="ov-sidebar-inner">
         <div class="ov-details-grid">
           <div class="ov-detail-item"><span class="ov-meta-label">Work Phone</span>${phone ? `<span class="ov-meta-value">${phone}</span>` : ovAddBtn('profile','Contact')}</div>
@@ -15552,7 +15552,7 @@ try {
     <span class="version-switcher-title">V1</span>
     <span class="version-switcher-desc">Initial Requirements</span>
   </button>
-  <button class="version-switcher-btn" data-version="v1_1" onclick="setVersion('v1_1')">
+  <button class="version-switcher-btn" data-version="v1_1" onclick="setVersion('v1_1')" style="display:none;">
     <span class="version-switcher-title">v1.1</span>
     <span class="version-switcher-desc">Job tab changes</span>
   </button>

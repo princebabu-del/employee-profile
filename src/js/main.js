@@ -771,7 +771,7 @@ function buildOverviewSectionHTML() {
     <!-- ── Right 4 cols: sticky summary ── -->
     <div class="ov-sidebar">
       <div class="ov-sidebar-inner">
-        <h3 class="ov-section-title">Basic Information</h3>
+        <h3 class="ov-section-title">General Details</h3>
         <div class="ov-details-grid">
           <div class="ov-detail-item"><span class="ov-meta-label">Work Phone</span>${phone ? `<span class="ov-meta-value">${phone}</span>` : ovAddBtn('profile','Contact')}</div>
           <div class="ov-detail-item"><span class="ov-meta-label">Work Email</span>${email ? `<span class="ov-meta-value ov-meta-mono">${email}</span>` : ovAddBtn('profile','Contact')}</div>
